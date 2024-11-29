@@ -1,0 +1,1 @@
+# This is the final project of group 8 for the Data Management course (Autumn semester 2024).
