@@ -1,10 +1,10 @@
-Libell¨¦s des zones d¡¯emploi ou EPT;Salaire au lieu de r¨¦sidence;Salaire au lieu de travail
+employment zone or EPT;Salaire au lieu de residence;Salaire au lieu de travail
 Cergy-Vexin;2.606;2.368
 Coulommiers;2.276;2.008
-¨¦tampes;2.494;2.377
-¨¦vry;2.416;2.349
+etampes;2.494;2.377
+evry;2.416;2.349
 Fontainebleau-Nemours;2.618;2.266
-Marne-la-Vall¨¦e;2.551;2.351
+Marne-la-Vallee;2.551;2.351
 Meaux;2.370;2.102
 Melun;2.366;2.315
 Provins;2.191;1.939
@@ -14,9 +14,9 @@ Saclay;2.848;2.817
 Seine-Yvelinoise;3.257;2.636
 Versailles-Saint-Quentin;3.367;3.094
 T1- Ville de Paris;3.772;3.232
-T2- Vall¨¦e Sud Grand Paris;3.281;3.377
+T2- Vallee Sud Grand Paris;3.281;3.377
 T3- Grand Paris Seine Ouest;4.052;3.780
-T4- Paris Ouest La D¨¦fense;4.132;3.968
+T4- Paris Ouest La Defense;4.132;3.968
 T5- Boucle Nord de Seine;2.828;3.067
 T6- Plaine Commune;1.948;2.930
 T7- Paris Terres d¡¯Envol;2.029;2.834
@@ -24,5 +24,5 @@ T8- Est Ensemble;2.232;2.543
 T9- Grand Paris Grand Est;2.370;2.251
 T10- Paris Est Marne & Bois;3.176;2.661
 T11- Grand Paris Sud Est Avenir;2.506;2.282
-T12- Grand-Orly Seine Bi¨¨vre;2.388;2.756
-?le-de-France;3.000;3.034
+T12- Grand-Orly Seine Bievre;2.388;2.756
+Ile-de-France;3.000;3.034

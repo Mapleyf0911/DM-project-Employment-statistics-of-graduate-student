@@ -1,35 +1,35 @@
-Location;Secteur d¡¯activit¨¦;Salaire mensuel moyen;Salaire mensuel m¨¦dian
-?le-de-France;"Fabrication de denr¨¦es alimentaires, de boissons et de produits ¨¤ base de tabac";2.308;1.741
-?le-de-France;Cok¨¦faction et raffinage;3.758;3.360
-?le-de-France;"Fabrication d'¨¦quipements ¨¦lectriques, ¨¦lectroniques, informatiques ; fabrication de machines";3.985;3.266
-?le-de-France;Fabrication de mat¨¦riels de transport;4.120;3.422
-?le-de-France;Fabrication d'autres produits industriels;3.391;2.656
-?le-de-France;"Industries extractives, ¨¦nergie, eau, gestion des d¨¦chets et d¨¦pollution";3.578;2.771
-?le-de-France;Construction;2.497;2.096
-?le-de-France;"Commerce ; r¨¦paration d'automobiles et de motocycles";2.780;2.048
-?le-de-France;Transports et entreposage;2.671;2.244
-?le-de-France;H¨¦bergement et restauration;1.849;1.580
-?le-de-France;Information et communication;3.874;3.154
-?le-de-France;Activit¨¦s financi¨¨res et d'assurance;4.704;3.339
-?le-de-France;Activit¨¦s immobili¨¨res;3.014;2.318
-?le-de-France;"Activit¨¦s scientifiques et techniques ; services administratifs et de soutien";3.126;2.191
-?le-de-France;"Administration publique, enseignement, sant¨¦ humaine et action sociale";2.181;1.808
-?le-de-France;Autres activit¨¦s de services;2.504;1.921
-?le-de-France;Ensemble;3.034;2.265
-France;"Fabrication de denr¨¦es alimentaires, de boissons et de produits ¨¤ base de tabac";2.094;1.778
-France;Cok¨¦faction et raffinage;3.923;3.607
-France;"Fabrication d'¨¦quipements ¨¦lectriques, ¨¦lectroniques, informatiques ; fabrication de machines";2.957;2.433
-France;Fabrication de mat¨¦riels de transport;3.194;2.670
+Location;Industry;Salaire mensuel moyen;Salaire mensuel median
+ile-de-France;"Fabrication de denrees alimentaires, de boissons et de produits a base de tabac";2.308;1.741
+ile-de-France;Cokefaction et raffinage;3.758;3.360
+ile-de-France;"Fabrication d'equipements electriques, electroniques, informatiques ; fabrication de machines";3.985;3.266
+ile-de-France;Fabrication de materiels de transport;4.120;3.422
+ile-de-France;Fabrication d'autres produits industriels;3.391;2.656
+ile-de-France;"Industries extractives, energie, eau, gestion des dechets et depollution";3.578;2.771
+ile-de-France;Construction;2.497;2.096
+ile-de-France;"Commerce ; reparation d'automobiles et de motocycles";2.780;2.048
+ile-de-France;Transports et entreposage;2.671;2.244
+ile-de-France;Hebergement et restauration;1.849;1.580
+ile-de-France;Information et communication;3.874;3.154
+ile-de-France;Activites financieres et d'assurance;4.704;3.339
+ile-de-France;Activites immobilieres;3.014;2.318
+ile-de-France;"Activites scientifiques et techniques ; services administratifs et de soutien";3.126;2.191
+ile-de-France;"Administration publique, enseignement, sante humaine et action sociale";2.181;1.808
+ile-de-France;Autres activites de services;2.504;1.921
+ile-de-France;Ensemble;3.034;2.265
+France;"Fabrication de denrees alimentaires, de boissons et de produits a base de tabac";2.094;1.778
+France;Cokefaction et raffinage;3.923;3.607
+France;"Fabrication d'equipements electriques, electroniques, informatiques ; fabrication de machines";2.957;2.433
+France;Fabrication de materiels de transport;3.194;2.670
 France;Fabrication d'autres produits industriels;2.532;2.127
-France;"Industries extractives, ¨¦nergie, eau, gestion des d¨¦chets et d¨¦pollution";2.934;2.430
+France;"Industries extractives, energie, eau, gestion des dechets et depollution";2.934;2.430
 France;Construction;2.145;1.866
-France;"Commerce ; r¨¦paration d'automobiles et de motocycles";2.176;1.716
+France;"Commerce ; reparation d'automobiles et de motocycles";2.176;1.716
 France;Transports et entreposage;2.247;1.942
-France;H¨¦bergement et restauration;1.698;1.505
+France;Hebergement et restauration;1.698;1.505
 France;Information et communication;3.405;2.829
-France;Activit¨¦s financi¨¨res et d'assurance;3.578;2.688
-France;Activit¨¦s immobili¨¨res;2.478;1.988
-France;"Activit¨¦s scientifiques et techniques ; services administratifs et de soutien";2.410;1.782
-France;"Administration publique, enseignement, sant¨¦ humaine et action sociale";1.900;1.645
-France;Autres activit¨¦s de services;2.074;1.595
+France;Activites financieres et d'assurance;3.578;2.688
+France;Activites immobilieres;2.478;1.988
+France;"Activites scientifiques et techniques ; services administratifs et de soutien";2.410;1.782
+France;"Administration publique, enseignement, sante humaine et action sociale";1.900;1.645
+France;Autres activites de services;2.074;1.595
 France;Ensemble;2.369;1.871
