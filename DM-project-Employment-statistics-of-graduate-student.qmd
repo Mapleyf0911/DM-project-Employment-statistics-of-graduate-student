@@ -3,3 +3,19 @@ title: "DM-project-Employment-statistics-of-graduate-student"
 author: "Maud Delattre  Yufeng Jiang"
 format: html
 ---
+
+## Cleaning the dataset
+
+There are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
+
+-   For example, the "académie" and "académie" code is redundant, as all universities in the sample belong to the same "académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "académie" of Paris.
+
+-   "Etablissement actuel" is not relevant.
+
+-   "cle_etab" could be obtained using more explicit columns. It is redundant.
+
+-   "Id_Paysage" is redundant. It has the same purpose as "Code de l'établissement".
+
+However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
+
+The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". We can then check that there are 1265 unique values in our newly made column.
