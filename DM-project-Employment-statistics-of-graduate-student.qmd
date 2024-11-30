@@ -129,7 +129,22 @@ insertion_master <- insertion_master |>
 
 ## Research focus
 
-  We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country allow us to emit hypotheses on different correlations between some of our variables. 
+  We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to emit hypotheses on different correlations between some of our variables. 
+
+-     Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis, but other 
+
+-     Is the university one goes to a significant factor to explain wages ? 
+
+-     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? 
+
+-    Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating ? 
+
+-   Do some specializations require to leave the Île-de-France region more ? 
+
+-   Do some specializations attract more women ? 
+
+
+
 
 
 
