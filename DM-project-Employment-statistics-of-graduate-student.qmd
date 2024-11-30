@@ -4,14 +4,13 @@ author: "Maud Delattre  Yufeng Jiang"
 format: html
 ---
 
-<<<<<<< HEAD
-
 ```{r}
 #| message: false
 here::i_am("DM-project-Employment-statistics-of-graduate-student.Rproj")
 library(here)
 library(vroom)
 library(ggplot2)
+library(dplyr)
 theme_set(theme_bw())
 ```
 
@@ -22,7 +21,7 @@ We aim to analyze the employability, situation of employment and salary of gradu
 
 Here, we are using employment statistics of master student from the survey made by the Ministère de l'Enseignement Supérieur et de la Recherche. To focus on a more targeted subset, we import the data where the 'académie' value is Paris.
 
-### Employment survey of master students dataset
+### Main dataset: Employment survey of master students data
 ```{r}
 #| message: false
 insersion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.csv"))
@@ -37,17 +36,17 @@ insersion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.
 
 In this dataset, each observation includes: 
 
-**●** The university, the field and subject of the graduate program; <br>
-**●** The number of responses and response rate;<br>
-**●** The percentage of women and scholarship students; <br>
-**●** The "insertion" rate (% of the graduates that are employed)<br>
-**●** The percentage of students that work full-time, in executive positions, and outside the Île-de-France region;<br>
-**●** The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
-**●** The unemployment rate for the graduates that stayed in the ÎIe-de-France region; <br>
-**●** First and third quartile net monthly salaries for graduates that stayed in the Île-de-France region. <br>
+-   The university, the field and subject of the graduate program; <br>
+-   The number of responses and response rate;<br>
+-   The percentage of women and scholarship students; <br>
+-   The "insertion" rate (% of the graduates that are employed)<br>
+-   The percentage of students that work full-time, in executive positions, and outside the Île-de-France region;<br>
+-   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
+-   The unemployment rate for the graduates that stayed in the ÎIe-de-France region; <br>
+-   First and third quartile net monthly salaries for graduates that stayed in the Île-de-France region. <br>
 
 
-### Complemantary data: wages data
+### Complemantary dataset: wages data
 
 For comparison purposes, we also have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs. 
 
@@ -103,12 +102,13 @@ wages_employment_zone <- vroom(here("data", "Figure_6_Average_Monthly_Net_Wages_
 |------------------------|---------------------------------|
 | Number of observations | `r NROW(wages_employment_zone)` |
 | Number of variables    | `r NCOL(wages_employment_zone)` |
-=======
-## Cleaning the dataset
 
-There are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
--   For example, the "académie" and "académie" code is redundant, as all universities in the sample belong to the same "académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "académie" of Paris.
+## Data Cleaning
+
+In our main dataset, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
+
+-   The "Académie" and "Code de l'académie" is redundant, as all universities in the sample belong to the same "Académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "Académie" of Paris.
 
 -   "Etablissement actuel" is not relevant.
 
@@ -116,7 +116,17 @@ There are 35 variables. Some of them might be superfluous or at least not releva
 
 -   "Id_Paysage" is redundant. It has the same purpose as "Code de l'établissement".
 
+Therefore, we can delete the 5th, 6th, 7th, 33th and 35th columns in the original dataset.
+
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
 
 The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". We can then check that there are 1265 unique values in our newly made column.
->>>>>>> f7ccccfc44175d72a8ff145b46b7fc33cd0a6978
+
+```{r}
+insersion_master <- insersion_master |> select(-c(5, 6, 7, 33, 35))
+```
+
+```{r}
+insersion_master <- insersion_master |>
+  mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
+```
