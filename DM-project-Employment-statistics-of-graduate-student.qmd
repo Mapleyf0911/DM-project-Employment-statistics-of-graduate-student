@@ -1,6 +1,6 @@
 ---
 title: "DM-project-Employment-statistics-of-graduate-student"
-author: "Maud Delattre  Yufeng Jiang"
+author: "Lou Delattre  Yufeng Jiang"
 format: html
 ---
 
@@ -102,6 +102,13 @@ wages_employment_zone <- vroom(here("data", "Figure_6_Average_Monthly_Net_Wages_
 |------------------------|---------------------------------|
 | Number of observations | `r NROW(wages_employment_zone)` |
 | Number of variables    | `r NCOL(wages_employment_zone)` |
+<<<<<<< HEAD
+=======
+
+=======
+
+## Cleaning the dataset
+>>>>>>> 06faf9502116f8d5bd020953f9a6a8197c6004ec
 
 
 ## Data Cleaning
@@ -116,6 +123,7 @@ In our main dataset, there are 35 variables. Some of them might be superfluous o
 
 -   "Id_Paysage" is redundant. It has the same purpose as "Code de l'établissement".
 
+<<<<<<< HEAD
 Therefore, we can delete the 5th, 6th, 7th, 33th and 35th columns in the original dataset.
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
@@ -130,3 +138,17 @@ insersion_master <- insersion_master |> select(-c(5, 6, 7, 33, 35))
 insersion_master <- insersion_master |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
+=======
+-   "Taux d'emploi" and "Taux d'emploi en France" are missing a significant amount of values(1155 out of 1265 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them. 
+
+New variable:
+
+-  The identifier (primary key) is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". We can then check that there are 1265 unique values in our newly made column.
+
+Not all observations will be kept for analysis. In the "Remark" columns, some observations are unexploitable -according to the source itself- as the response rate is considered too small or as the graduate program did not have enough students. Observations about programs that did not partake in the survey (mainly Paris-Dauphine graduate programs) will also not be included. 
+
+However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
+
+
+>>>>>>> f7ccccfc44175d72a8ff145b46b7fc33cd0a6978
+>>>>>>> 06faf9502116f8d5bd020953f9a6a8197c6004ec
