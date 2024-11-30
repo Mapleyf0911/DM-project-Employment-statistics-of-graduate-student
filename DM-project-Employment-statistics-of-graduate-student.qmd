@@ -113,7 +113,7 @@ insertion_master <- insertion_master |> select(-c(5, 6, 7, 18, 19, 33, 35))
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
 
--    The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". We can then check that there are 1265 unique values in our newly made column.
+-    The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". 
 
 ```{r}
 insertion_master <- insertion_master |>
@@ -129,7 +129,7 @@ insertion_master <- insertion_master |>
 
 ## Research focus
 
-
+  We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country allow us to emit hypotheses on different correlations between some of our variables. 
 
 
 
