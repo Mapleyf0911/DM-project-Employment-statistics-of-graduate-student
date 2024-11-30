@@ -25,13 +25,13 @@ Here, we are using employment statistics from the professional insertion survey 
 ### Main dataset: Employment survey of master students data
 ```{r}
 #| message: false
-insersion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.csv"))
+insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.csv"))
 ```
 
 |                        |                            |
 |------------------------|----------------------------|
-| Number of observations | `r NROW(insersion_master)` |
-| Number of variables    | `r NCOL(insersion_master)` |
+| Number of observations | `r NROW(insertion_master)` |
+| Number of variables    | `r NCOL(insertion_master)` |
 
 To focus on a more targeted subset, we import the data where the 'académie' value is Paris, and we get 1265 observations in total.
 
@@ -49,7 +49,7 @@ In this dataset, each observation includes:
 -   First and third quartile net monthly salaries for graduates that stayed in the Île-de-France region. <br>
 
 
-### Complemantary dataset: wages data
+### Complementary dataset: wages data
 
 For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
@@ -108,7 +108,7 @@ In our main dataset, there are 35 variables. Some of them might be superfluous o
 Therefore, we can delete the 5th, 6th, 7th, 18th, 19th, 33th and 35th columns in the original dataset.
 
 ```{r}
-insersion_master <- insersion_master |> select(-c(5, 6, 7, 18, 19, 33, 35))
+insertion_master <- insertion_master |> select(-c(5, 6, 7, 18, 19, 33, 35))
 ```
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
@@ -116,7 +116,7 @@ However, some graduate programs have two observations (one after 18 months, one 
 -    The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc". We can then check that there are 1265 unique values in our newly made column.
 
 ```{r}
-insersion_master <- insersion_master |>
+insertion_master <- insertion_master |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
