@@ -133,7 +133,8 @@ insertion_master <- insertion_master |>
 
 -     Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons. 
 
--     Is the university one goes to a significant factor to explain wages ? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the significance of the "university" factor. 
+-     Is the university one goes to a significant factor to explain wages ? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the significance of the "university" factor.
+
 -     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? Using the results of the first question and data from the additional data set, various plot representations could be meaningful. 
 
 -    Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating ? It will be necessary to separate the programs where we have 18-month observations, those with 30-months observations and those with both, and isolate this last category. 
