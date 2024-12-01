@@ -131,11 +131,11 @@ insertion_master <- insertion_master |>
 
   We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to emit hypotheses on different correlations between some of our variables. 
 
--     Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis, but other 
+-     Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons. 
 
--     Is the university one goes to a significant factor to explain wages ? 
+-     Is the university one goes to a significant factor to explain wages ? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the relevancy of the "university" factor. 
 
--     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? 
+-     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? Using the results of the first question
 
 -    Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating ? 
 
