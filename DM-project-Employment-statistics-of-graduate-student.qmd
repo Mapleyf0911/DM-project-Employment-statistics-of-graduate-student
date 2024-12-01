@@ -129,22 +129,20 @@ insertion_master <- insertion_master |>
 
 ## Research focus
 
-  We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to emit hypotheses on different correlations between some of our variables. Expressing these hypotheses, we obtain the following questions:  
+  We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute make comparisons between sectors and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:  
 
 -     Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons. 
 
 -     Is the university one goes to a significant factor to explain wages ? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the significance of the "university" factor. 
-
--     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? Using the results of the first question and the data from the additional data set, various plot representations could be meaningful. 
+-     How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? Using the results of the first question and data from the additional data set, various plot representations could be meaningful. 
 
 -    Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating ? It will be necessary to separate the programs where we have 18-month observations, those with 30-months observations and those with both, and isolate this last category. 
 
--   Do some specializations require to leave the Île-de-France region more ? This could be interesting to
-see the concentration of certain industries 
+-   Do some specializations require to leave the Île-de-France region more ? This could be interesting to see the concentration (or saturation) of certain industries in the region of the capital city, which is a recurrent debate in the political sphere.  
 
--   Do some specializations attract more women/ more scholarship students ? 
+-   Do some specializations attract more women/ more scholarship students ? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.  
 
-We do not have a unique research question. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students ? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines.   
+  We do not have a unique research question, as it would not allow us to make enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students ? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.    
 
 
 
