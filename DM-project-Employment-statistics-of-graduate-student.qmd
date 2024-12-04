@@ -11,6 +11,8 @@ library(here)
 library(vroom)
 library(ggplot2)
 library(dplyr)
+library(tidyr)
+library(purrr)
 theme_set(theme_bw())
 ```
 
@@ -41,7 +43,7 @@ In this dataset, each observation includes:
 -   The university, the field and subject of the graduate program;<br>
 -   The number of responses and response rate;<br>
 -   The percentage of women and scholarship students; <br>
--   The "insertion" rate (% of the graduates that are employed)<br>
+-   The "insertion" rate (% of the graduates that are employed);<br>
 -   The percentage of students that work full-time, in executive positions, and outside the Île-de-France region;<br>
 -   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
 -   The unemployment rate for the graduates that stayed in the ÎIe-de-France region; <br>
@@ -51,7 +53,9 @@ In this dataset, each observation includes:
 
 For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
-The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations sociales nominatives (DSN)" in French).Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
+The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations sociales nominatives (DSN)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
+
+The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the Ministry of Armed Forces (France). This database can be used to describe salaried employment across all sectors.
 
 From the dataset, we get 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
@@ -93,15 +97,15 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 In our main dataset, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
--   The "Académie"(the 7th column) and "Code de l'académie"(the 6th column) is redundant, as all universities in the sample belong to the same "Académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "Académie" of Paris.
+-   The "Académie" (the 7th column) and "Code de l'académie" (the 6th column) is redundant, as all universities in the sample belong to the same "Académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "Académie" of Paris.
 
--   "Etablissement actuel"(the 5th column) is not relevant.
+-   "Etablissement actuel" (the 5th column) is not relevant.
 
--   "cle_ETAB"(the 33th column) could be obtained using more explicit columns. It is redundant.
+-   "cle_ETAB" (the 33th column) could be obtained using more explicit columns. It is redundant.
 
--   "Id_Paysage"(the 35th column) is redundant. It has the same purpose as "Code de l'établissement".
+-   "Id_Paysage" (the 35th column) is redundant. It has the same purpose as "Code de l'établissement".
 
--   "Taux d'emploi"(the 18th column) and "Taux d'emploi en France"(the 19th column) are missing a significant amount of values(1155 out of 1265 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them.
+-   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (1155 out of 1265 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them.
 
 Therefore, we can delete the 5th, 6th, 7th, 18th, 19th, 33th and 35th columns in the original dataset.
 
@@ -126,24 +130,38 @@ insertion_master <- insertion_master |> filter(is.na(Remarque)| Remarque == "Uni
 
 ## Data Joining
 
-```{r}
 
+Here, we get the panel data by joining the wage data from the complementary dataset to our main dataset.
+
+```{r}
+Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
+    pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
+              names_sep = " ") 
+rows_to_fill <- nrow(insertion_master) - nrow(Net_wage_EQTP_wide_regional_national)
+if (rows_to_fill > 0) {
+  repeated_data <- map(1:rows_to_fill, ~ Net_wage_EQTP_wide_regional_national) |>
+    bind_rows()
+  Net_wage_EQTP_wide_regional_national <- bind_rows(Net_wage_EQTP_wide_regional_national, repeated_data)
+}
+
+insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
 ```
+
 
 ## Research focus
 
-We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute make comparisons between sectors and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
+We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
 
--   Which fields/specializations lead to the highest wages, have the highest insertion rate or have the highest level of stable employment ? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
+- Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment ? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
 
--   Is the university one goes to a significant factor to explain wages ? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the significance of the "university" factor.
+-   Is the university that one goes to a significant factor to explain wages? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression and try to determine the significance of the "university" factor.
 
--   How do the wages of these graduates compare to the average national/regional salaries ? How do they compare to the average of their respective fields ? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
+-   How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
 
--   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating ? It will be necessary to separate the programs where we have 18-month observations, those with 30-months observations and those with both, and isolate this last category.
+-   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
 
 -   Do some specializations require to leave the Île-de-France region more ? This could be interesting to see the concentration (or saturation) of certain industries in the region of the capital city, which is a recurrent debate in the political sphere.
 
--   Do some specializations attract more women/ more scholarship students ? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
+-   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
-We do not have a unique research question, as it would not allow us to make enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students ? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
+We do not have a unique research question, as it would not allow us to make enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
