@@ -118,17 +118,16 @@ insertion_master <- insertion_master |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
+However, not all observations are usable. In the "remark" column of our data set, some of them are deemed "inoperable" by the source itself, either due to too small of a rate of response/student population (for very small graduate programs) or because the university did not partake in the survey (all observations of the latter case involve the university of Paris-Dauphine). A few observations are considered "fragile" with a response rate inferior to 50%, but nor unusable, thus they will be kept for analysis.
 
-  However, not all observations are usable. In the "remark" column of our data set, some of them are deemed "inoperable" by the source itself, either due to too small of a rate of response/student population (for very small graduate programs) or because the university did not partake in the survey (all observations of the latter case involve the university of Paris-Dauphine). A few observations are considered "fragile" with a response rate inferior to 50%, but nor unusable, thus they will be kept for analysis. 
-  
 ```{r}
-
+insertion_master <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
-
 
 ## Data Joining
 
 ```{r}
+
 ```
 
 ## Research focus
