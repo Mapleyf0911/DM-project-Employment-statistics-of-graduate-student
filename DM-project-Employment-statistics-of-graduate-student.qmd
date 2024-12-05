@@ -72,17 +72,12 @@ We have:
 Net_wage_EQTP <- vroom(here("data", "Figure_1_Distribution_of_Monthly_Net_Wages_in_Ile-de-France_and_France_EQTP.csv"))
 ```
 
--   the percentage of the different type of earners in the Île-de-France regions;
+-   the percentage of different types of earners in the Île-de-France regions;
 
 ```{r}
 #| message: false
 pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Incomes_High_Wealth_and_High_Wages.csv"))
 ```
-
-|                        |                           |
-|------------------------|---------------------------|
-| Number of observations | `r NROW(pct_high_income)` |
-| Number of variables    | `r NCOL(pct_high_income)` |
 
 -   the average net wages of each gender in different employment categories;
 
@@ -101,7 +96,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 ## Data Cleaning
 
-In our main dataset, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
+In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
 -   The "Académie" (the 7th column) and "Code de l'académie" (the 6th column) is redundant, as all universities in the sample belong to the same "Académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "Académie" of Paris.
 
