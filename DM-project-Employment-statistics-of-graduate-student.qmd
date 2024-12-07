@@ -93,6 +93,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 | National mean for women                 | `r wages_profession_gender[10,3]`       |
 | IDF mean for men                        | `r wages_profession_gender[5,4]`        |
 | IDF mean for women                      | `r wages_profession_gender[5,3]`        |
+<small>**Note:** IDF (Île-de-France)</small>
 
 ## Data Cleaning
 
