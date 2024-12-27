@@ -36,7 +36,7 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.
 
 To focus on a more targeted subset, we import the data where the 'académie' value is Paris, and we get 1265 observations in total.
 
-**Source:** <u>https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris</u>
+**Source:**
 
 In this dataset, each observation includes:
 
@@ -59,7 +59,7 @@ The database (Flores 2018) covers all employers (civil service, private employer
 
 From the dataset, we get 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
-**Source:** <u>https://www.insee.fr/fr/statistiques/5650198</u>
+**Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
 
 This data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
 
@@ -87,12 +87,13 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 ```
 
 |                                         |                                         |
-|-----------------------------------------|-----------------------------------------|
+|------------------------------------|------------------------------------|
 | Number of socio-professional categories | `r (NROW(wages_profession_gender)-2)/2` |
 | National mean for men                   | `r wages_profession_gender[10,4]`       |
 | National mean for women                 | `r wages_profession_gender[10,3]`       |
 | IDF mean for men                        | `r wages_profession_gender[5,4]`        |
 | IDF mean for women                      | `r wages_profession_gender[5,3]`        |
+
 <small>**Note:** IDF (Île-de-France)</small>
 
 ## Data Cleaning
