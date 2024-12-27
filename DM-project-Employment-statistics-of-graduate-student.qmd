@@ -16,6 +16,8 @@ library(purrr)
 theme_set(theme_bw())
 ```
 
+Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
+
 ## Data import
 
 We aim to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program and university.
