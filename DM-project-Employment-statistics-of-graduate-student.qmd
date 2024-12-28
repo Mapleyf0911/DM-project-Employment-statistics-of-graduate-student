@@ -23,13 +23,34 @@ theme_set(theme_bw())
 
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
 
-## Data import
+## Goal of our research 
+
+We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
+
+-   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
+
+-   Is the university that one goes to a significant factor to explain wages? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
+
+-   How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
+
+-   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
+
+-   Do some specializations require to leave the Île-de-France region more? This could be interesting to see the concentration (or saturation) of certain industries in the region of the capital city, which is a recurrent debate in the political sphere.
+
+-   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
+
+We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
+
+## The datasets 
+
+### Data import
 
 We aim to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program and university.
 
 Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focused on French graduate students who had completed their initial training ("formation initiale" in French) and had not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time point: 18 months and 30 months after their graduation.
 
-### Main dataset: Employment survey of master students data
+#### Main dataset 
+
 
 ```{r}
 #| message: false
@@ -57,7 +78,8 @@ In this dataset, each observation includes:
 -   The unemployment rate for the graduates that stayed in the ÎIe-de-France region; <br>
 -   First and third quartile net monthly salaries for graduates that stayed in the Île-de-France region. <br>
 
-### Complementary dataset: wages data
+
+#### Complementary dataset 
 
 For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
@@ -107,7 +129,27 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 <small>**Note:** IDF (Île-de-France)</small>
 
-## Data Cleaning
+#### Dataset joining 
+
+Here, we get the panel data by joining the wage data from the complementary dataset to our main dataset.
+
+```{r}
+#| echo: false 
+Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
+    pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
+              names_sep = " ") 
+rows_to_fill <- nrow(insertion_master) - nrow(Net_wage_EQTP_wide_regional_national)
+if (rows_to_fill > 0) {
+  repeated_data <- map(1:rows_to_fill, ~ Net_wage_EQTP_wide_regional_national) |>
+    bind_rows()
+  Net_wage_EQTP_wide_regional_national <- bind_rows(Net_wage_EQTP_wide_regional_national, repeated_data)
+}
+
+insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
+```
+
+
+### Data cleaning 
 
 In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
@@ -145,39 +187,9 @@ However, not all observations are usable. In the "remark" column of our data set
 insertion_master <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
 
-## Data Joining
 
-Here, we get the panel data by joining the wage data from the complementary dataset to our main dataset.
+## Data analysis 
 
-```{r}
-#| echo: false 
-Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
-    pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
-              names_sep = " ") 
-rows_to_fill <- nrow(insertion_master) - nrow(Net_wage_EQTP_wide_regional_national)
-if (rows_to_fill > 0) {
-  repeated_data <- map(1:rows_to_fill, ~ Net_wage_EQTP_wide_regional_national) |>
-    bind_rows()
-  Net_wage_EQTP_wide_regional_national <- bind_rows(Net_wage_EQTP_wide_regional_national, repeated_data)
-}
+## Conclusion 
 
-insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
-```
 
-## Research focus
-
-We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
-
--   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
-
--   Is the university that one goes to a significant factor to explain wages? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
-
--   How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
-
--   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
-
--   Do some specializations require to leave the Île-de-France region more? This could be interesting to see the concentration (or saturation) of certain industries in the region of the capital city, which is a recurrent debate in the political sphere.
-
--   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
-
-We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
