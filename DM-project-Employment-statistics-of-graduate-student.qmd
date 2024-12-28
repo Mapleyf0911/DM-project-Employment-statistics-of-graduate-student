@@ -3,7 +3,8 @@ title: "DMC Project: Employment statistics of graduate students"
 author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
-  pdf: default 
+  wordcount-pdf: default 
+   
 ---
 
 ```{r}
