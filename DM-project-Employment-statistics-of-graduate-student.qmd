@@ -39,7 +39,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
-We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
+We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus more on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
 
 ## The datasets 
 
@@ -55,7 +55,7 @@ Here, we are using employment statistics from the professional insertion survey 
 ```{r}
 #| message: false
 #| echo: false 
-insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.csv"))
+insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
 
 |                        |                            |
@@ -63,9 +63,8 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master.
 | Number of observations | `r NROW(insertion_master)` |
 | Number of variables    | `r NCOL(insertion_master)` |
 
-To focus on a more targeted subset, we import the data where the 'académie' value is Paris, and we get 1265 observations in total.
 
-**Source:**
+**Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
 In this dataset, each observation includes:
 
@@ -73,10 +72,10 @@ In this dataset, each observation includes:
 -   The number of responses and response rate;<br>
 -   The percentage of women and scholarship students; <br>
 -   The "insertion" rate (% of the graduates that are employed);<br>
--   The percentage of students that work full-time, in executive positions, and outside the Île-de-France region;<br>
+-   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
 -   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
--   The unemployment rate for the graduates that stayed in the ÎIe-de-France region; <br>
--   First and third quartile net monthly salaries for graduates that stayed in the Île-de-France region. <br>
+-   The regional unemployment rate; <br>
+-   First and third quartile regional net monthly salaries. <br>
 
 
 #### Complementary dataset 
@@ -131,7 +130,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 #### Dataset joining 
 
-Here, we get the panel data by joining the wage data from the complementary dataset to our main dataset.
+Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary dataset to our main dataset.
 
 ```{r}
 #| echo: false 
@@ -153,21 +152,19 @@ insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_na
 
 In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
--   The "Académie" (the 7th column) and "Code de l'académie" (the 6th column) is redundant, as all universities in the sample belong to the same "Académie". Thus, all observations have "A01" as "Code de l'académie" and are managed by the "Académie" of Paris.
-
--   "Etablissement actuel" (the 5th column) is not relevant.
+-   "Etablissement actuel" (the 5th column) just gives the exact full name of the university, but in reality we know the corresponding university from the abbreviation, so this column is not very helpful to our research and can bu deleted.
 
 -   "cle_ETAB" (the 33th column) could be obtained using more explicit columns. It is redundant.
 
 -   "Id_Paysage" (the 35th column) is redundant. It has the same purpose as "Code de l'établissement".
 
--   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (1155 out of 1265 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them.
+-   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them.
 
-Therefore, we can delete the 5th, 6th, 7th, 18th, 19th, 33th and 35th columns in the original dataset.
+Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the original dataset.
 
 ```{r}
 #| echo: false 
-insertion_master <- insertion_master |> select(-c(5, 6, 7, 18, 19, 33, 35))
+insertion_master <- insertion_master |> select(-c(5, 18, 19, 33, 35))
 ```
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
