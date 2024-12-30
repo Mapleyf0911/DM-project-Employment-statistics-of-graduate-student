@@ -4,12 +4,12 @@ author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
   wordcount-pdf: default 
+execute: 
+  echo: false
+  warning: false
 ---
 
 ```{r}
-#| message: false
-#| echo: false
-#| warning: false
 here::i_am("DM-project-Employment-statistics-of-graduate-student.Rproj")
 library(here)
 library(vroom)
@@ -51,8 +51,6 @@ Here, we are using employment statistics from the professional insertion survey 
 #### Main dataset
 
 ```{r}
-#| message: false
-#| echo: false 
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
 
@@ -93,24 +91,18 @@ We have:
 -   the different deciles of net wages at the Île-de-France and national levels;
 
 ```{r}
-#| message: false
-#| echo: false 
 Net_wage_EQTP <- vroom(here("data", "Figure_1_Distribution_of_Monthly_Net_Wages_in_Ile-de-France_and_France_EQTP.csv"))
 ```
 
 -   the percentage of different types of earners in the Île-de-France regions;
 
 ```{r}
-#| message: false
-#| echo: false 
 pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Incomes_High_Wealth_and_High_Wages.csv"))
 ```
 
 -   the average net wages of each gender in different employment categories;
 
 ```{r}
-#| message: false
-#| echo: false 
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
 
@@ -129,7 +121,6 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary dataset to our main dataset.
 
 ```{r}
-#| echo: false 
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
     pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
               names_sep = " ") 
@@ -158,7 +149,6 @@ In our main data set, there are 35 variables. Some of them might be superfluous 
 Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the original dataset.
 
 ```{r}
-#| echo: false 
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
@@ -167,7 +157,6 @@ However, some graduate programs have two observations (one after 18 months, one 
 -   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
 
 ```{r}
-#| echo: false 
 insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
@@ -175,7 +164,6 @@ insertion_master_panel <- insertion_master_panel |>
 However, not all observations are usable. In the "remark" column of our data set, some of them are deemed "inoperable" by the source itself, either due to too small of a rate of response/student population (for very small graduate programs) or because the university did not partake in the survey (all observations of the latter case involve the university of Paris-Dauphine). A few observations are considered "fragile" with a response rate inferior to 50%, but not unusable, thus they will be kept for analysis.
 
 ```{r}
-#| echo: false 
 insertion_master_panel <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
 
@@ -191,6 +179,8 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 })
 print(non_numeric_counts)
 ```
+
+
 
 ```{r}
 insertion_master_panel <- insertion_master_panel |>
@@ -210,14 +200,10 @@ Which fields/specializations lead to the highest wages, have the highest inserti
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
 ```{r}
-#| message: false
-#| echo: false
-#| warning: false  
 insertion_master_panel |>
   group_by(situation) |>
   summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
   knitr::kable()
-
 ```
 
 ## Conclusion
