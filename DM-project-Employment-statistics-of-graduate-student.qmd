@@ -164,7 +164,7 @@ Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the origi
 
 ```{r}
 #| echo: false 
-insertion_master <- insertion_master |> select(-c(5, 18, 19, 33, 35))
+insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
@@ -173,7 +173,7 @@ However, some graduate programs have two observations (one after 18 months, one 
 
 ```{r}
 #| echo: false 
-insertion_master <- insertion_master |>
+insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
@@ -181,11 +181,76 @@ However, not all observations are usable. In the "remark" column of our data set
 
 ```{r}
 #| echo: false 
-insertion_master <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+insertion_master_panel <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+```
+
+In our dataset "insertion_master_panel", we observe many missing values, represented as "ns" or "nd" in some cells. Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+
+```{r}
+selected_columns <- insertion_master_panel[, 14:32]
+is_non_numeric <- function(x) {
+  !is.numeric(suppressWarnings(as.numeric(as.character(x)))) | is.na(x)
+}
+non_numeric_counts <- sapply(selected_columns, function(column){
+  sum(is_non_numeric(column))
+})
+print(non_numeric_counts)
 ```
 
 
-## Data analysis 
+```{r}
+insertion_master_panel <- insertion_master_panel |>
+  mutate(`Taux d’insertion` = ifelse(`Taux d’insertion` == "ns", NA, `Taux d’insertion`),
+         `Taux d’insertion` = ifelse(`Taux d’insertion` == "nd", NA, `Taux d’insertion`))
+```
+
+
+
+## Data analysis
+
+Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+
+
+
+Number of Académies
+```{r}
+insertion_master_panel |> 
+  distinct(Académie) |>
+  nrow()
+```
+
+Number of Établissements
+```{r}
+insertion_master_panel |> 
+  distinct(Établissement) |>
+  nrow()
+```
+
+Number of Domaines
+```{r}
+insertion_master_panel |> 
+  distinct(Domaine) |>
+  nrow()
+```
+Number of Disciplines
+```{r}
+insertion_master_panel |> 
+  distinct(Discipline) |>
+  nrow()
+```
+
+
+
+```{r}
+  
+insertion_master_panel |>
+  group_by(situation) |>
+  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE))
+```
+
+
+
+
 
 ## Conclusion 
 
