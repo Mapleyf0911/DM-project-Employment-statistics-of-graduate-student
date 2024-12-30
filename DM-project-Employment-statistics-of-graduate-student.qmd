@@ -192,7 +192,6 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 print(non_numeric_counts)
 ```
 
-
 ```{r}
 insertion_master_panel <- insertion_master_panel |>
   mutate(`Taux d’insertion` = ifelse(`Taux d’insertion` == "ns", NA, `Taux d’insertion`),
@@ -204,13 +203,11 @@ insertion_master_panel <- insertion_master_panel |>
 Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 |   Categories   |                             Number                              |
-|:---------------:|:-----------------------------------------------------:|
+|:-----------------:|:---------------------------------------------------:|
 |   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
 | Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
 |    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
-
-
 
 ```{r}
 #| message: false
@@ -218,7 +215,9 @@ Which fields/specializations lead to the highest wages, have the highest inserti
 #| warning: false  
 insertion_master_panel |>
   group_by(situation) |>
-  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE))
+  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
+  knitr::kable()
+
 ```
 
 ## Conclusion
