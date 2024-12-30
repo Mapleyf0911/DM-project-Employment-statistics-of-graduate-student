@@ -18,6 +18,7 @@ library(dplyr)
 library(tidyr)
 library(purrr)
 theme_set(theme_bw())
+getwd()
 ```
 
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
@@ -175,6 +176,11 @@ insertion_master_panel <- insertion_master_panel |>
   filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
 
+
+```{r}
+print(insertion_master_panel)
+```
+
 In our dataset "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" =  "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
@@ -217,6 +223,13 @@ insertion_master_panel |>
   summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
   knitr::kable()
 ```
+
+
+
+```{r}
+insertion_master_panel |> filter(is.na(Académie))
+```
+
 
 ## Data analysis 
 
