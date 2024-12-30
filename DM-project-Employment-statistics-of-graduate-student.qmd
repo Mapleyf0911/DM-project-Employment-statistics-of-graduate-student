@@ -196,20 +196,16 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 })
 print(non_numeric_counts)
 ```
-
-
 ```{r}
-insertion_master_panel <- insertion_master_panel |>
-  mutate(`Taux d’insertion` = ifelse(`Taux d’insertion` == "ns", NA, `Taux d’insertion`),
-         `Taux d’insertion` = ifelse(`Taux d’insertion` == "nd", NA, `Taux d’insertion`))
+insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "ns", NA, x))
+insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "nd", NA, x))
+insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "fe", NA, x))
+insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
-
-
 
 ## Data analysis
 
 Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
-
 
 
 Number of Académies
