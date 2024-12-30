@@ -4,7 +4,6 @@ author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
   wordcount-pdf: default 
-   
 ---
 
 ```{r}
@@ -23,7 +22,7 @@ theme_set(theme_bw())
 
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
 
-## Goal of our research 
+## Goal of our research
 
 We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
 
@@ -41,7 +40,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus more on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
 
-## The datasets 
+## The datasets
 
 ### Data import
 
@@ -49,8 +48,7 @@ We aim to analyze the employability, situation of employment and salary of gradu
 
 Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focused on French graduate students who had completed their initial training ("formation initiale" in French) and had not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time point: 18 months and 30 months after their graduation.
 
-#### Main dataset 
-
+#### Main dataset
 
 ```{r}
 #| message: false
@@ -62,7 +60,6 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-
 |------------------------|----------------------------|
 | Number of observations | `r NROW(insertion_master)` |
 | Number of variables    | `r NCOL(insertion_master)` |
-
 
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
@@ -77,8 +74,7 @@ In this dataset, each observation includes:
 -   The regional unemployment rate; <br>
 -   First and third quartile regional net monthly salaries. <br>
 
-
-#### Complementary dataset 
+#### Complementary dataset
 
 For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
@@ -128,7 +124,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 <small>**Note:** IDF (Île-de-France)</small>
 
-#### Dataset joining 
+#### Dataset joining
 
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary dataset to our main dataset.
 
@@ -147,8 +143,7 @@ if (rows_to_fill > 0) {
 insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
 ```
 
-
-### Data cleaning 
+### Data cleaning
 
 In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
@@ -204,54 +199,26 @@ insertion_master_panel <- insertion_master_panel |>
          `Taux d’insertion` = ifelse(`Taux d’insertion` == "nd", NA, `Taux d’insertion`))
 ```
 
-
-
 ## Data analysis
 
 Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
-
-
-Number of Académies
-```{r}
-insertion_master_panel |> 
-  distinct(Académie) |>
-  nrow()
-```
-
-Number of Établissements
-```{r}
-insertion_master_panel |> 
-  distinct(Établissement) |>
-  nrow()
-```
-
-Number of Domaines
-```{r}
-insertion_master_panel |> 
-  distinct(Domaine) |>
-  nrow()
-```
-Number of Disciplines
-```{r}
-insertion_master_panel |> 
-  distinct(Discipline) |>
-  nrow()
-```
+|   Categories   |                             Number                              |
+|:---------------:|:-----------------------------------------------------:|
+|   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
+| Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
+|    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
+|  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
 
 
 ```{r}
-  
+#| message: false
+#| echo: false
+#| warning: false  
 insertion_master_panel |>
   group_by(situation) |>
   summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE))
 ```
 
-
-
-
-
-## Conclusion 
-
-
+## Conclusion
