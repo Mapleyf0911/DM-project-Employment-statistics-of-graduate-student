@@ -124,7 +124,9 @@ Here, we get the panel data "insertion_master_panel" by joining the wage data fr
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
     pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
               names_sep = " ") 
+##
 rows_to_fill <- nrow(insertion_master) - nrow(Net_wage_EQTP_wide_regional_national)
+##
 if (rows_to_fill > 0) {
   repeated_data <- map(1:rows_to_fill, ~ Net_wage_EQTP_wide_regional_national) |>
     bind_rows()
@@ -157,6 +159,7 @@ However, some graduate programs have two observations (one after 18 months, one 
 -   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
 
 ```{r}
+## création clé 
 insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
@@ -172,18 +175,22 @@ insertion_master_panel <- insertion_master_panel |>
   filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
 
-In our dataset "insertion_master_panel", we observe many missing values, represented as "ns" or "nd" in some cells. Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+In our dataset "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" =  "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 14:32]
+
 is_non_numeric <- function(x) {
   !is.numeric(suppressWarnings(as.numeric(as.character(x)))) | is.na(x)
 }
 non_numeric_counts <- sapply(selected_columns, function(column){
   sum(is_non_numeric(column))
 })
+
 print(non_numeric_counts)
 ```
+
+
 
 ```{r}
 insertion_master_panel <- insertion_master_panel |>
@@ -191,7 +198,8 @@ insertion_master_panel <- insertion_master_panel |>
          `Taux d’insertion` = ifelse(`Taux d’insertion` == "nd", NA, `Taux d’insertion`))
 ```
 
-## Data analysis
+There are "summary" observations in our data set : 
+
 
 Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
@@ -210,8 +218,7 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
-
+## Data analysis 
 
 
 ## Conclusion
-
