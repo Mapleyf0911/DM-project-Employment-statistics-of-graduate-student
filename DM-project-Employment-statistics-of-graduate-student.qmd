@@ -10,6 +10,7 @@ execute:
 ---
 
 ```{r}
+#|eval: false 
 here::i_am("DM-project-Employment-statistics-of-graduate-student.Rproj")
 library(here)
 library(vroom)
@@ -161,10 +162,15 @@ insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
-However, not all observations are usable. In the "remark" column of our data set, some of them are deemed "inoperable" by the source itself, either due to too small of a rate of response/student population (for very small graduate programs) or because the university did not partake in the survey (all observations of the latter case involve the university of Paris-Dauphine). A few observations are considered "fragile" with a response rate inferior to 50%, but not unusable, thus they will be kept for analysis.
+
+
+SEPARATION des blocs
+
+
 
 ```{r}
-insertion_master_panel <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+insertion_master_panel <- insertion_master_panel |> 
+  filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
 ```
 
 In our dataset "insertion_master_panel", we observe many missing values, represented as "ns" or "nd" in some cells. Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
@@ -179,8 +185,6 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 })
 print(non_numeric_counts)
 ```
-
-
 
 ```{r}
 insertion_master_panel <- insertion_master_panel |>
@@ -199,6 +203,7 @@ Which fields/specializations lead to the highest wages, have the highest inserti
 |    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
+
 ```{r}
 insertion_master_panel |>
   group_by(situation) |>
@@ -206,4 +211,8 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
+
+
+
 ## Conclusion
+
