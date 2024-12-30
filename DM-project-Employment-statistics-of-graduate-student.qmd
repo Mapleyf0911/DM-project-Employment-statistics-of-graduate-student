@@ -10,7 +10,6 @@ execute:
 ---
 
 ```{r}
-#|eval: false 
 here::i_am("DM-project-Employment-statistics-of-graduate-student.Rproj")
 library(here)
 library(vroom)
