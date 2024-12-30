@@ -18,7 +18,6 @@ library(dplyr)
 library(tidyr)
 library(purrr)
 theme_set(theme_bw())
-
 ```
 
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
@@ -62,15 +61,24 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-
 
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
-In this dataset, each observation includes:
+In this dataset, each observation includes:/
 
--   The university, the field and subject of the graduate program;<br>
+-   The year of the survey, the type of master's degree, the university number and the "académie" number and name;
+
+-   The name of the university responsible of the degree, the field ("domaine") and subject ("discipline") of the graduate program;<br>
+
 -   The number of responses and response rate;<br>
+
 -   The percentage of women and scholarship students; <br>
+
 -   The "insertion" rate (% of the graduates that are employed);<br>
+
 -   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
+
 -   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
+
 -   The regional unemployment rate; <br>
+
 -   First and third quartile regional net monthly salaries. <br>
 
 #### Complementary dataset
@@ -83,7 +91,7 @@ The database (Flores 2018) covers all employers (civil service, private employer
 
 From the dataset, we get 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
-**Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
+Source: <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
 
 This data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
 
@@ -165,16 +173,21 @@ insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
-
-
-
 ```{r}
+## removing 
 insertion_master_panel <- insertion_master_panel |> 
   filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+
+## isolating aggregate observations 
+aggregate_data <- insertion_master_panel |> 
+  filter(is.na(Académie))
+
+## removing aggregate observations from main dataset 
+insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
+
 ```
 
-
-In our dataset "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" =  "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+In our dataset "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 14:32]
@@ -189,26 +202,22 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 print(non_numeric_counts)
 ```
 
-
-
 ```{r}
 insertion_master_panel <- insertion_master_panel |>
   mutate(`Taux d’insertion` = ifelse(`Taux d’insertion` == "ns", NA, `Taux d’insertion`),
          `Taux d’insertion` = ifelse(`Taux d’insertion` == "nd", NA, `Taux d’insertion`))
 ```
 
-There are "summary" observations in our data set : 
-
+There are "summary" observations in our data set :
 
 Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 |   Categories   |                             Number                              |
-|:-----------------:|:---------------------------------------------------:|
+|:---------------------:|:-----------------------------------------------:|
 |   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
 | Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
 |    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
-
 
 ```{r}
 insertion_master_panel |>
@@ -217,14 +226,6 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
-
-
-```{r}
-aggregate_data <- insertion_master_panel |> filter(is.na(Académie))
-```
-
-
-## Data analysis 
-
+## Data analysis
 
 ## Conclusion
