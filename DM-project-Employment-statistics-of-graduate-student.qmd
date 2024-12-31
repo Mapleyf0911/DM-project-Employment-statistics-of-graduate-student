@@ -221,9 +221,17 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
 
-Convert the data type of the column "Taux d’insertion" from character to numeric
+And to facilitate our future analysis, we convert some character-formatted data values into numeric format.
+
 ```{r}
-insertion_master_panel$`Taux d’insertion` <- as.numeric(as.character(insertion_master_panel$`Taux d’insertion`))
+cols_to_convert <- c(16:20, 23:29)
+insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, cols_to_convert], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
 ```
 
 
@@ -243,7 +251,7 @@ Here are "summary" observations in our data set :
 Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 ```{r}
-best_specializations <- insertion_master_panel |>
+best_specializations_max <- insertion_master_panel |>
   group_by(Académie, Domaine) |>
   summarise(
     MaxSalaire = ifelse(is.na(max(`Salaire brut annuel estimé`, na.rm = TRUE)), "", max(`Salaire brut annuel estimé`, na.rm = TRUE)),
@@ -255,7 +263,22 @@ best_specializations <- insertion_master_panel |>
 ```
 **Problem to be solved for the code above**
 Value '-Inf' in the column 'MaxInsertionRate' of best_specializations need to be addressed.
-What does Toutes universités et établissements assimilés mean? Can we represent all the obsrvations in the group with missing value in Académie column by a representative Académie (create a new Académie) ? Or just delete all these values ?
+
+
+```{r}
+best_specializations_mean <- insertion_master_panel |>
+  group_by(Académie) |>
+  summarise(
+    MeanSalaire = ifelse(is.na(mean(`Salaire brut annuel estimé`, na.rm = TRUE)), "", mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MeanInsertionRate = ifelse(is.na(mean(`Taux d’insertion`, na.rm = TRUE)), "", mean(`Taux d’insertion`, na.rm = TRUE)),
+    MeanStableEmployment = ifelse(is.na(mean(`% emplois stables`, na.rm = TRUE)), "", mean(`% emplois stables`, na.rm = TRUE)),
+    .groups = "drop"
+  ) |>
+  arrange(Académie, desc(MeanSalaire), desc(MeanInsertionRate), desc(MeanStableEmployment))
+
+```
+
+
 
 
 Q2: Is the university that one goes to a significant factor to explain wages? 
