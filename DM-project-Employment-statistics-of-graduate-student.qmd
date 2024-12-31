@@ -209,6 +209,9 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
 
+## Data analysis
+
+Here are "summary" observations in our data set : 
 
 |   Categories   |                             Number                              |
 |:---------------------:|:----------------------------------------------:|
@@ -217,6 +220,33 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 |    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
+
+Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+
+```{r}
+best_specializations <- insertion_master_panel |>
+  group_by(Académie, Domaine) |>
+  summarise(
+    MaxSalaire = ifelse(is.na(max(`Salaire brut annuel estimé`, na.rm = TRUE)), "", max(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MaxInsertionRate = ifelse(is.na(max(`Taux d’insertion`, na.rm = TRUE)), "", max(`Taux d’insertion`, na.rm = TRUE)),
+    MaxStableEmployment = ifelse(is.na(max(`% emplois stables`, na.rm = TRUE)), "", max(`% emplois stables`, na.rm = TRUE)),
+    .groups = "drop"
+  ) |>
+  arrange(Académie, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
+```
+**Problem to be solved for the code above**
+Value '-Inf' in the column 'MaxInsertionRate' of best_specializations need to be addressed.
+What does Toutes universités et établissements assimilés mean? Can we represent all the obsrvations in the group with missing value in Académie column by a representative Académie (create a new Académie) ? Or just delete all these values ?
+
+
+Q2: Is the university that one goes to a significant factor to explain wages? 
+
+We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
+
+
+
+
+
 ```{r}
 insertion_master_panel |>
   group_by(situation) |>
@@ -224,37 +254,7 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
-## Data analysis
 
-Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
-
-
-Number of Académies
-```{r}
-insertion_master_panel |> 
-  distinct(Académie) |>
-  nrow()
-```
-
-Number of Établissements
-```{r}
-insertion_master_panel |> 
-  distinct(Établissement) |>
-  nrow()
-```
-
-Number of Domaines
-```{r}
-insertion_master_panel |> 
-  distinct(Domaine) |>
-  nrow()
-```
-Number of Disciplines
-```{r}
-insertion_master_panel |> 
-  distinct(Discipline) |>
-  nrow()
-```
 
 
 
