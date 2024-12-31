@@ -4,13 +4,12 @@ author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
   wordcount-pdf: default 
-   
+execute: 
+  echo: false
+  warning: false
 ---
 
 ```{r}
-#| message: false
-#| echo: false
-#| warning: false
 here::i_am("DM-project-Employment-statistics-of-graduate-student.Rproj")
 library(here)
 library(vroom)
@@ -23,9 +22,9 @@ theme_set(theme_bw())
 
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
 
-## Goal of our research 
+## Goal of our research
 
-We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages, some of them narrowed to the economic center of the country, allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at multiple levels. Expressing these hypotheses, we obtain the following questions:
+We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at various levels. Expressing these hypotheses, we obtain the following questions:
 
 -   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
 
@@ -39,22 +38,19 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
-We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions (as we focus more on a rather small sample, on graduates that went to university in the capital city) but this may help define guidelines for a bigger project.
+We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions, nonetheless this may help define guidelines for a bigger project.
 
-## The datasets 
+## The datasets
 
 ### Data import
 
-We aim to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program and university.
+We aim to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program, university and "académie".
 
-Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focused on French graduate students who had completed their initial training ("formation initiale" in French) and had not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time point: 18 months and 30 months after their graduation.
+Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focus on French graduate students who have completed their initial training ("formation initiale" in French) and have not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time points: 18 months and 30 months after their graduation.
 
-#### Main dataset 
-
+#### Main dataset
 
 ```{r}
-#| message: false
-#| echo: false 
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
 
@@ -63,32 +59,39 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-
 | Number of observations | `r NROW(insertion_master)` |
 | Number of variables    | `r NCOL(insertion_master)` |
 
-
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
-In this dataset, each observation includes:
+In this data set, each observation includes:/
 
--   The university, the field and subject of the graduate program;<br>
+-   The year of the survey, the type of master's degree, the university number and the "académie" number and name;
+
+-   The name of the university responsible of the degree, the field ("domaine") and subject ("discipline") of the graduate program;<br>
+
 -   The number of responses and response rate;<br>
+
 -   The percentage of women and scholarship students; <br>
+
 -   The "insertion" rate (% of the graduates that are employed);<br>
+
 -   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
+
 -   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
+
 -   The regional unemployment rate; <br>
--   First and third quartile regional net monthly salaries. <br>
 
+-   First and third quartiles regional net monthly salaries. <br>
 
-#### Complementary dataset 
+#### Complementary data set
 
 For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
-The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations sociales nominatives (DSN)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
+The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
 
 The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the Ministry of Armed Forces (France). This database can be used to describe salaried employment across all sectors.
 
-From the dataset, we get 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
+From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
-**Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
+Source: <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
 
 This data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
 
@@ -97,24 +100,18 @@ We have:
 -   the different deciles of net wages at the Île-de-France and national levels;
 
 ```{r}
-#| message: false
-#| echo: false 
 Net_wage_EQTP <- vroom(here("data", "Figure_1_Distribution_of_Monthly_Net_Wages_in_Ile-de-France_and_France_EQTP.csv"))
 ```
 
 -   the percentage of different types of earners in the Île-de-France regions;
 
 ```{r}
-#| message: false
-#| echo: false 
 pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Incomes_High_Wealth_and_High_Wages.csv"))
 ```
 
 -   the average net wages of each gender in different employment categories;
 
 ```{r}
-#| message: false
-#| echo: false 
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
 
@@ -128,16 +125,17 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 <small>**Note:** IDF (Île-de-France)</small>
 
-#### Dataset joining 
+#### Dataset joining
 
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary dataset to our main dataset.
 
 ```{r}
-#| echo: false 
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
     pivot_wider(names_from = ...1, values_from = c(`ile-de-France`, France), 
               names_sep = " ") 
+##
 rows_to_fill <- nrow(insertion_master) - nrow(Net_wage_EQTP_wide_regional_national)
+##
 if (rows_to_fill > 0) {
   repeated_data <- map(1:rows_to_fill, ~ Net_wage_EQTP_wide_regional_national) |>
     bind_rows()
@@ -147,8 +145,7 @@ if (rows_to_fill > 0) {
 insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
 ```
 
-
-### Data cleaning 
+### Data cleaning
 
 In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
@@ -158,12 +155,11 @@ In our main data set, there are 35 variables. Some of them might be superfluous 
 
 -   "Id_Paysage" (the 35th column) is redundant. It has the same purpose as "Code de l'établissement".
 
--   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including inactives (neither working nor in search of employment.) while the insertion rate does not include them.
+-   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including "inactives" (neither working nor in search of employment.) while the insertion rate does not include them.
 
 Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the original dataset.
 
 ```{r}
-#| echo: false 
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
@@ -172,35 +168,60 @@ However, some graduate programs have two observations (one after 18 months, one 
 -   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
 
 ```{r}
-#| echo: false 
+## création clé 
 insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
-However, not all observations are usable. In the "remark" column of our data set, some of them are deemed "inoperable" by the source itself, either due to too small of a rate of response/student population (for very small graduate programs) or because the university did not partake in the survey (all observations of the latter case involve the university of Paris-Dauphine). A few observations are considered "fragile" with a response rate inferior to 50%, but not unusable, thus they will be kept for analysis.
-
 ```{r}
-#| echo: false 
-insertion_master_panel <- insertion_master |> filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+## removing 
+insertion_master_panel <- insertion_master_panel |> 
+  filter(is.na(Remarque)| Remarque == "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" )
+
+## isolating aggregate observations 
+aggregate_data <- insertion_master_panel |> 
+  filter(is.na(Académie))
+
+## removing aggregate observations from main dataset 
+insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
+
 ```
 
-In our dataset "insertion_master_panel", we observe many missing values, represented as "ns" or "nd" in some cells. Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+In our data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 14:32]
+
 is_non_numeric <- function(x) {
   !is.numeric(suppressWarnings(as.numeric(as.character(x)))) | is.na(x)
 }
 non_numeric_counts <- sapply(selected_columns, function(column){
   sum(is_non_numeric(column))
 })
+
 print(non_numeric_counts)
 ```
+
 ```{r}
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "ns", NA, x))
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "nd", NA, x))
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "fe", NA, x))
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
+```
+
+
+|   Categories   |                             Number                              |
+|:---------------------:|:----------------------------------------------:|
+|   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
+| Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
+|    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
+|  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
+
+```{r}
+insertion_master_panel |>
+  group_by(situation) |>
+  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
+  knitr::kable()
 ```
 
 ## Data analysis
@@ -249,5 +270,6 @@ insertion_master_panel |>
 
 
 ## Conclusion 
+
 
 
