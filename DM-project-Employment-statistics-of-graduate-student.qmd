@@ -209,6 +209,13 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
 
+Convert the data type of the column "Taux d’insertion" from character to numeric
+```{r}
+insertion_master_panel$`Taux d’insertion` <- as.numeric(as.character(insertion_master_panel$`Taux d’insertion`))
+```
+
+
+
 ## Data analysis
 
 Here are "summary" observations in our data set : 
