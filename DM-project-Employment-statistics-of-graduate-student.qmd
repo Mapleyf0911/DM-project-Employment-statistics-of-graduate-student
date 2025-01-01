@@ -248,6 +248,7 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
 
+
 Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 
@@ -284,11 +285,20 @@ best_specializations_mean <- insertion_master_panel |>
 NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year. 
 
 
+
+
 Q2: Is the university that one goes to a significant factor to explain wages? 
 
 We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
 
+Let's focus on the "Economie" specialization, 30 months after graduation. 
 
+```{r}
+insertion_master_panel |> 
+  filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))  |> 
+  group_by(Établissement) |>
+  summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`))
+```
 
 
 
@@ -299,19 +309,6 @@ insertion_master_panel |>
   summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
   knitr::kable()
 ```
-
-
-
-
-
-```{r}
-  
-insertion_master_panel |>
-  group_by(situation) |>
-  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE))
-```
-
-
 
 
 
