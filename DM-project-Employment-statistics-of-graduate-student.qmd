@@ -294,7 +294,7 @@ We could take one field/specialization taught at different universities, focus o
 Let's focus on the "Economie" specialization, 30 months after graduation. 
 
 ```{r}
-insertion_master_panel |> 
+reg_econ <- insertion_master_panel |> 
   filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))  |> 
   group_by(Établissement) |>
   summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`))
