@@ -34,7 +34,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
 
--   Do some specializations require to leave the Île-de-France region more? This could be interesting to see the concentration (or saturation) of certain industries in the region of the capital city, which is a recurrent debate in the political sphere.
+-   Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level. 
 
 -   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
@@ -83,7 +83,7 @@ In this data set, each observation includes:
 
 #### Complementary data set
 
-For comparison purposes, we found wage data we need in a report "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
+For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
 
 The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
 
@@ -127,7 +127,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 #### Dataset joining
 
-Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary dataset to our main dataset.
+Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set.
 
 ```{r}
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
@@ -183,7 +183,7 @@ In the "Remarque" column, there are five possible values for each observation:
 
 Among all observations, only those where the "Remarque" column is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain the necessary data for further analysis (e.g., graduate employment rates and salary levels). Therefore, we will retain only those observations that meet these two conditions.
 
-Additionally, in the "Académie" column, there are N/A values. We have removed these irrelevant entries from our main dataset.
+Some of the observations are on gathered data from all degrees of the same discipline, by year. As they are on national data, they are not related to any "académie". We will keep them for analysis purposes but after removing them from the main data set. 
 
 ```{r}
 ## removing 
@@ -214,6 +214,7 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 print(non_numeric_counts)
 ```
 
+
 ```{r}
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "ns", NA, x))
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "nd", NA, x))
@@ -238,7 +239,6 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 ## Data analysis
 
-Here are "summary" observations in our data set : 
 
 |   Categories   |                             Number                              |
 |:---------------------:|:----------------------------------------------:|
@@ -249,6 +249,8 @@ Here are "summary" observations in our data set :
 
 
 Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+
+
 
 ```{r}
 best_specializations_max <- insertion_master_panel |>
@@ -279,11 +281,13 @@ best_specializations_mean <- insertion_master_panel |>
 ```
 
 
+NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year. 
 
 
 Q2: Is the university that one goes to a significant factor to explain wages? 
 
 We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
+
 
 
 
