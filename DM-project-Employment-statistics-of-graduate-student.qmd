@@ -227,7 +227,7 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 To facilitate our future analysis, we convert some character-formatted data values into numeric format.
 
 ```{r}
-cols_to_convert <- c(16:20, 23:29)
+cols_to_convert <- c(16:21, 23:29)
 insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, cols_to_convert], function(x){
   if (is.character(x)){
     as.numeric(ifelse(is.na(x), NA, x))
@@ -236,8 +236,6 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
   }
 })
 ```
-
-
 
 ## Data analysis
 
@@ -253,33 +251,55 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
-
-
 ```{r}
 best_specializations_max <- insertion_master_panel |>
-  group_by(Académie, Domaine) |>
+  group_by(Domaine, Discipline) |>
   summarise(
-    MaxSalaire = ifelse(is.na(max(`Salaire brut annuel estimé`, na.rm = TRUE)), "", max(`Salaire brut annuel estimé`, na.rm = TRUE)),
-    MaxInsertionRate = ifelse(is.na(max(`Taux d’insertion`, na.rm = TRUE)), "", max(`Taux d’insertion`, na.rm = TRUE)),
-    MaxStableEmployment = ifelse(is.na(max(`% emplois stables`, na.rm = TRUE)), "", max(`% emplois stables`, na.rm = TRUE)),
+    MaxSalaire = ifelse(all(is.na(`Salaire brut annuel estimé`)), NA_real_, max(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MaxInsertionRate = ifelse(all(is.na(`Taux d’insertion`)), NA_real_, max(`Taux d’insertion`, na.rm = TRUE)),
+    MaxStableEmployment = ifelse(all(is.na(`% emplois stables`)), NA_real_, max(`% emplois stables`, na.rm = TRUE)),
     .groups = "drop"
   ) |>
-  arrange(Académie, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
+  arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
-**Problem to be solved for the code above**
-Value '-Inf' in the column 'MaxInsertionRate' of best_specializations need to be addressed.
 
 
 ```{r}
 best_specializations_mean <- insertion_master_panel |>
-  group_by(Académie) |>
+  group_by(Domaine, Discipline) |>
   summarise(
-    MeanSalaire = ifelse(is.na(mean(`Salaire brut annuel estimé`, na.rm = TRUE)), "", mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
-    MeanInsertionRate = ifelse(is.na(mean(`Taux d’insertion`, na.rm = TRUE)), "", mean(`Taux d’insertion`, na.rm = TRUE)),
-    MeanStableEmployment = ifelse(is.na(mean(`% emplois stables`, na.rm = TRUE)), "", mean(`% emplois stables`, na.rm = TRUE)),
+    MeanSalaire = ifelse(all(is.na(`Salaire brut annuel estimé`)), NA_real_, mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MeanInsertionRate = ifelse(all(is.na(`Taux d’insertion`)), NA_real_, mean(`Taux d’insertion`, na.rm = TRUE)),
+    MeanStableEmployment = ifelse(all(is.na(`% emplois stables`)), NA_real_, mean(`% emplois stables`, na.rm = TRUE)),
     .groups = "drop"
   ) |>
-  arrange(Académie, desc(MeanSalaire), desc(MeanInsertionRate), desc(MeanStableEmployment))
+  arrange(Domaine, desc(MeanSalaire), desc(MeanInsertionRate), desc(MeanStableEmployment))
+
+```
+
+For this question, we tried to find the "best fields/specializations" from two perspectives.
+We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as STEM and Health Sciences fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
+```{r}
+max_salary_domain <- best_specializations_max |>
+  group_by(Domaine) |>
+  summarise(MaxSalaire = max(MaxSalaire, na.rm = TRUE)) |>
+  arrange(desc(MaxSalaire))
+
+max_insertion_rate_domain <- best_specializations_max |>
+  group_by(Domaine) |>
+  summarise(MaxInsertionRate = max(MaxInsertionRate, na.rm = TRUE)) |>
+  arrange(desc(MaxInsertionRate))
+
+max_stable_employment_domain <- best_specializations_max |>
+  group_by(Domaine) |>
+  summarise(MaxStableEmployment = max(MaxStableEmployment, na.rm = TRUE)) |>
+  arrange(desc(MaxStableEmployment))
+```
+
+
+Further, we looked at the average performance of employment in each fields/specializations.
+
+```{r}
 
 ```
 
@@ -303,19 +323,7 @@ reg_econ <- insertion_master_panel |>
 ```
 
 Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The followin code is not the final one, I'm still working on it.
-```{r}
-reg_econ_data <- insertion_master_panel |> 
-  filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))
 
-reg_econ_data_with_dummies <- reg_econ_data |>
-  mutate(Établissement = as.factor(Établissement)) |>
-  pivot_wider(names_from = Établissement, values_from = `Salaire net médian des emplois à temps plein`, values_fill = list(`Salaire net médian des emplois à temps plein` = 0))
-
-reference_school <- reg_econ_data_with_dummies |> filter(name == min(name))
-reg_econ_data_with_dummies <- reg_econ_data_with_dummies |> filter(name != min(name))
-
-model <- lm(`Salaire net médian des emplois à temps plein` ~ ., data = reg_econ_data_with_dummies)
-```
 
 
 
