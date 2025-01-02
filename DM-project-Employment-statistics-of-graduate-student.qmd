@@ -302,6 +302,21 @@ reg_econ <- insertion_master_panel |>
   summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`))
 ```
 
+Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The followin code is not the final one, I'm still working on it.
+```{r}
+reg_econ_data <- insertion_master_panel |> 
+  filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))
+
+reg_econ_data_with_dummies <- reg_econ_data |>
+  mutate(Établissement = as.factor(Établissement)) |>
+  pivot_wider(names_from = Établissement, values_from = `Salaire net médian des emplois à temps plein`, values_fill = list(`Salaire net médian des emplois à temps plein` = 0))
+
+reference_school <- reg_econ_data_with_dummies |> filter(name == min(name))
+reg_econ_data_with_dummies <- reg_econ_data_with_dummies |> filter(name != min(name))
+
+model <- lm(`Salaire net médian des emplois à temps plein` ~ ., data = reg_econ_data_with_dummies)
+```
+
 
 
 
