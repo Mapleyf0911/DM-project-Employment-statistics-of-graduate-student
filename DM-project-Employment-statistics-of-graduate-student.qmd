@@ -17,6 +17,7 @@ library(ggplot2)
 library(dplyr)
 library(tidyr)
 library(purrr)
+library(knitr)
 theme_set(theme_bw())
 ```
 
@@ -163,6 +164,7 @@ Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the origi
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
+
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
 
 -   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
@@ -210,8 +212,8 @@ is_non_numeric <- function(x) {
 non_numeric_counts <- sapply(selected_columns, function(column){
   sum(is_non_numeric(column))
 })
-
-print(non_numeric_counts)
+  
+kable(data.frame(non_numeric_counts))
 ```
 
 
@@ -222,7 +224,7 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
 
-And to facilitate our future analysis, we convert some character-formatted data values into numeric format.
+To facilitate our future analysis, we convert some character-formatted data values into numeric format.
 
 ```{r}
 cols_to_convert <- c(16:20, 23:29)
