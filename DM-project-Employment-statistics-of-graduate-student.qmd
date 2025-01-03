@@ -263,20 +263,6 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-
-```{r}
-best_specializations_mean <- insertion_master_panel |>
-  group_by(Domaine, Discipline) |>
-  summarise(
-    MeanSalaire = ifelse(all(is.na(`Salaire brut annuel estimé`)), NA_real_, mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
-    MeanInsertionRate = ifelse(all(is.na(`Taux d’insertion`)), NA_real_, mean(`Taux d’insertion`, na.rm = TRUE)),
-    MeanStableEmployment = ifelse(all(is.na(`% emplois stables`)), NA_real_, mean(`% emplois stables`, na.rm = TRUE)),
-    .groups = "drop"
-  ) |>
-  arrange(Domaine, desc(MeanSalaire), desc(MeanInsertionRate), desc(MeanStableEmployment))
-
-```
-
 For this question, we tried to find the "best fields/specializations" from two perspectives.
 We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as STEM and Health Sciences fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
 ```{r}
@@ -294,14 +280,67 @@ max_stable_employment_domain <- best_specializations_max |>
   group_by(Domaine) |>
   summarise(MaxStableEmployment = max(MaxStableEmployment, na.rm = TRUE)) |>
   arrange(desc(MaxStableEmployment))
+
+merged_domain_stats <- max_salary_domain |>
+  left_join(max_insertion_rate_domain, by = "Domaine") |>
+  left_join(max_stable_employment_domain, by = "Domaine")
+
+kable(merged_domain_stats, caption = "Optimal Employment Perfomance by Domain")
 ```
-
-
-Further, we looked at the average performance of employment in each fields/specializations.
+Further, we looked at the average performance of employment in each domain/specialization.
 
 ```{r}
+best_domain_mean <- insertion_master_panel |>
+  group_by(Domaine) |>
+  summarise(
+    MeanSalaire = ifelse(all(is.na(`Salaire brut annuel estimé`)), NA_real_, mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MeanInsertionRate = ifelse(all(is.na(`Taux d’insertion`)), NA_real_, mean(`Taux d’insertion`, na.rm = TRUE)),
+    MeanStableEmployment = ifelse(all(is.na(`% emplois stables`)), NA_real_, mean(`% emplois stables`, na.rm = TRUE)),
+    .groups = "drop"
+  ) |>
+  arrange(desc(MeanSalaire))
 
+kable(best_domain_mean, caption = "Average Employment Perfomance by Domain")
+
+best_domain_long <- best_domain_mean |>
+  pivot_longer(
+    cols = c(MeanSalaire, MeanInsertionRate, MeanStableEmployment),
+    names_to = "Metric",
+    values_to = "Value"
+  )
+
+
+ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ Metric, scales = "free_y") +
+  labs(title = "Domain Performance by Metric",
+       x = "Domaine",
+       y = "Value",
+       fill = "Domaine") +
+  theme_minimal() +
+  theme(
+    legend.position = "right", 
+    legend.text = element_text(size = 8), 
+    axis.text.x = element_blank(), 
+    axis.ticks.x = element_blank(), 
+    plot.margin = unit(c(1, 1, 1, 1), "cm") 
+  ) +
+  scale_fill_brewer(palette = "Set2") 
 ```
+
+
+```{r}
+best_specializations_mean <- insertion_master_panel |>
+  group_by(Discipline, Domaine) |>
+  summarise(
+    MeanSalaire = ifelse(all(is.na(`Salaire brut annuel estimé`)), NA_real_, mean(`Salaire brut annuel estimé`, na.rm = TRUE)),
+    MeanInsertionRate = ifelse(all(is.na(`Taux d’insertion`)), NA_real_, mean(`Taux d’insertion`, na.rm = TRUE)),
+    MeanStableEmployment = ifelse(all(is.na(`% emplois stables`)), NA_real_, mean(`% emplois stables`, na.rm = TRUE)),
+    .groups = "drop"
+  ) |>
+  arrange(desc(MeanSalaire))
+```
+
 
 
 NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year. 
