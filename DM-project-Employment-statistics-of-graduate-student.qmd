@@ -403,10 +403,12 @@ aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], funct
   }
 })
 
+aggregate_data |> filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Domaine) |> summarise(`Taux d'employés en dehors de la région` = mean(`% emplois extérieurs à la région de l’université`))
 
 ```
 
-
+-- Pas définitif 
  
 
 
