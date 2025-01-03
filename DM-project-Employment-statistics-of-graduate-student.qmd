@@ -199,6 +199,7 @@ aggregate_data <- insertion_master_panel |>
 ## removing aggregate observations from main dataset 
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 
+
 ```
 
 In our data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
@@ -376,10 +377,10 @@ reg_econ <- insertion_master_panel |>
   summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`))
 ```
 
-Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The followin code is not the final one, I'm still working on it.
+Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The following code is not the final one, I'm still working on it.
 
 
-
+Q4:
 
 
 ```{r}
@@ -389,6 +390,27 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
+
+Q5: 
+
+
+Q6: Do some specializations attract more women/scholarship students ? 
+
+```{r}
+## The columns '% femmes' and '% de diplômés boursiers' have to be converted into numerical values. 
+aggregate_data[, c(22, 27)] <- sapply(aggregate_data[, c(22,27)], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
+## Computing the means over the 11 years 
+aggregate_data |>
+  filter(!is.na(`% femmes`) & !is.na(`% de diplômés boursiers`)) |>
+  group_by(Discipline) |>
+  summarise(`Taux de femmes` = mean(`% femmes`), `Taux de boursiers` = mean(`% de diplômés boursiers`)) |> knitr::kable()
+```
 
 
 ## Conclusion 
