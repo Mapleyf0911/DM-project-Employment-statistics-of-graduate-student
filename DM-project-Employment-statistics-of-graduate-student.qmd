@@ -408,6 +408,25 @@ aggregate_data |> filter(!is.na(`% emplois extérieurs à la région de l’univ
 
 ```
 
+
+```{r}
+insertion_master_panel[, c(26)] <- sapply(insertion_master_panel[, c(26)], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
+
+insertion_master_panel |>
+  filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Académie,Domaine) |>
+  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))
+
+```
+
+
+
 -- Pas définitif 
  
 
