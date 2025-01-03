@@ -18,6 +18,7 @@ library(dplyr)
 library(tidyr)
 library(purrr)
 library(knitr)
+library(broom)
 theme_set(theme_bw())
 ```
 
@@ -357,26 +358,75 @@ best_specializations_mean <- insertion_master_panel |>
 ```
 
 
-
 NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year. 
 
+I don't try the aggregate observations for the Q1, but you can compare the two methods to see if the code above have any necessity to modify. --Yufeng
 
 
 
 Q2: Is the university that one goes to a significant factor to explain wages? 
 
-We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
-
-Let's focus on the "Economie" specialization, 30 months after graduation. 
+To explore this question, let's first have a look at the summary of the salary data for economics graduates from different universities. Here, we use the data collected 30 months after graduation.
 
 ```{r}
 reg_econ <- insertion_master_panel |> 
   filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))  |> 
   group_by(Établissement) |>
-  summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`))
+  summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`)) |>
+  arrange(desc(`Salaire moyen entre 2010 et 2021`))
+
+top_5 <- reg_econ[1:5, ]
+bottom_5 <- reg_econ[(nrow(reg_econ)-4):nrow(reg_econ),]
+
+top_5 <- top_5 |>
+  bind_rows(data.frame(`Établissement` = "..."))
+
+merged_table <- top_5 |>
+  bind_rows(bottom_5)
+
+merged_table$`Salaire moyen entre 2010 et 2021` <- sapply(merged_table$`Salaire moyen entre 2010 et 2021`, function(x) {
+  if (is.na(x)) {
+    return(NA) # If the value is NA, keep it as NA
+  } else {
+    return(format(x, digits = 2, nsmall = 2))  # Keep two decimal places
+  }
+})
+
+merged_table[is.na(merged_table)] <- "..."
+
+kable(merged_table, align = "c", caption = "Average Salaries of Economics Graduates 30 Months Post-Graduation")
+```
+From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
+
+===
+Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. 
+
+**Regression model**
+
+To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
+
+$$
+Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Major_k} + \sum_{l=1}^{L-1} \delta_l D_{City_l} + \phi \cdot Duration + \epsilon_i
+$$
+Where:<br>
+- $D_{University_j}$: Dummy variables for universities.<br>
+- $D_{Major_k}$: Dummy variables for majors.<br>
+- $D_{City_l}$: Dummy variables for cities.<br>
+- $Duration$: Graduation duration (18 or 30 months).<br>
+
+**Data Preparation**
+
+Here, we need to set dummy variables for categorial variables and define reference categories.
+
+
+```{r}
+
 ```
 
-Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The followin code is not the final one, I'm still working on it.
+===
+
+
+
 
 
 
@@ -389,6 +439,19 @@ insertion_master_panel |>
   knitr::kable()
 ```
 
+
+Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
+
+```{r}
+
+```
+
+
+Q4:  Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
+
+Q5: Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level. 
+
+Q6: Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
 
 ## Conclusion 
