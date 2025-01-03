@@ -250,7 +250,7 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 
 
-Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+### Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 ```{r}
 best_specializations_max <- insertion_master_panel |>
@@ -364,7 +364,7 @@ NOTE: We could use the aggregate observations for this question, looking at the 
 
 
 
-Q2: Is the university that one goes to a significant factor to explain wages? 
+### Q2: Is the university that one goes to a significant factor to explain wages? 
 
 We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
 
@@ -379,8 +379,11 @@ reg_econ <- insertion_master_panel |>
 
 Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. The following code is not the final one, I'm still working on it.
 
+### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
-Q4:
+
+
+### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
 
 ```{r}
@@ -391,7 +394,7 @@ insertion_master_panel |>
 ```
 
 
-Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done? 
+### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done? 
 
 ```{r}
 ## The columns '% emplois extérieurs à la région de l'université', '% femmes' and '% de diplômés boursiers' have to be converted into numerical values for Q5 and Q6. 
@@ -404,13 +407,14 @@ aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], funct
 })
 
 aggregate_data |> filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
-  group_by(Domaine) |> summarise(`Taux d'employés en dehors de la région` = mean(`% emplois extérieurs à la région de l’université`))
+  group_by(Domaine) |>
+  summarise(`Taux d'employés en dehors de la région` = mean(`% emplois extérieurs à la région de l’université`))
 
 ```
 
 
 ```{r}
-insertion_master_panel[, c(26)] <- sapply(insertion_master_panel[, c(26)], function(x){
+insertion_master_panel[, c(26, 27)] <- sapply(insertion_master_panel[, c(26, 27)], function(x){
   if (is.character(x)){
     as.numeric(ifelse(is.na(x), NA, x))
   } else {
@@ -421,9 +425,22 @@ insertion_master_panel[, c(26)] <- sapply(insertion_master_panel[, c(26)], funct
 insertion_master_panel |>
   filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
   group_by(Académie,Domaine) |>
-  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))
+  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
+  slice(which.max(`%_ext`)) |> knitr::kable()
+  
 
 ```
+
+
+```{r}
+insertion_master_panel |>
+  filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Académie,Domaine) |>
+  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
+  slice(which.min(`%_ext`)) |> knitr::kable()
+ 
+```
+
 
 
 
@@ -431,19 +448,20 @@ insertion_master_panel |>
  
 
 
-Q6: Do some specializations attract more women/scholarship students ? 
+### Q6: Do some specializations attract more women/scholarship students ? 
 
 ```{r}
+## Determining the
+average_femme <- mean(insertion_master_panel$`% femmes`, na.rm = TRUE)
 
 ## Computing the means over the 11 years 
-aggregate_data |>
-  filter(!is.na(`% femmes`) & !is.na(`% de diplômés boursiers`)) |>
+aggregate_femme <- aggregate_data |>
+  filter(!is.na(`% femmes`)) |>
   group_by(Discipline) |>
-  summarise(`Taux de femmes` = mean(`% femmes`), `Taux de boursiers` = mean(`% de diplômés boursiers`)) |> knitr::kable()
+  summarise(`Taux de femmes` = mean(`% femmes`))
+
+aggregate_femme |> filter(`Taux de femmes` > average_femme) |> knitr::kable()
+
 ```
 
-
 ## Conclusion 
-
-
-
