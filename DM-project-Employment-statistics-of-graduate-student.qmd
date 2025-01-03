@@ -391,20 +391,29 @@ insertion_master_panel |>
 ```
 
 
-Q5: 
-
-
-Q6: Do some specializations attract more women/scholarship students ? 
+Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done? 
 
 ```{r}
-## The columns '% femmes' and '% de diplômés boursiers' have to be converted into numerical values. 
-aggregate_data[, c(22, 27)] <- sapply(aggregate_data[, c(22,27)], function(x){
+## The columns '% emplois extérieurs à la région de l'université', '% femmes' and '% de diplômés boursiers' have to be converted into numerical values for Q5 and Q6. 
+aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], function(x){
   if (is.character(x)){
     as.numeric(ifelse(is.na(x), NA, x))
   } else {
     x
   }
 })
+
+
+```
+
+
+ 
+
+
+Q6: Do some specializations attract more women/scholarship students ? 
+
+```{r}
+
 ## Computing the means over the 11 years 
 aggregate_data |>
   filter(!is.na(`% femmes`) & !is.na(`% de diplômés boursiers`)) |>
