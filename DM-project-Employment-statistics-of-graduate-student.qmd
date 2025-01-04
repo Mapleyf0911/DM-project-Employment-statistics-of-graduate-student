@@ -19,6 +19,7 @@ library(tidyr)
 library(purrr)
 library(knitr)
 library(broom)
+library(fastDummies)
 theme_set(theme_bw())
 ```
 
@@ -419,8 +420,66 @@ Where:<br>
 
 Here, we need to set dummy variables for categorial variables and define reference categories.
 
+```{r}
+insertion_master_reg <- insertion_master_panel[, c(1, 4, 6, 8, 11, 20:22, 24)]
+ref_group <- aggregate_data[, c(1, 4, 6, 8, 11, 20:22, 24)]
+
+cols_to_convert <- c(6, 7, 9)
+ref_group[, cols_to_convert] <- sapply(ref_group[, cols_to_convert], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
+
+insertion_master_reg <- insertion_master_reg |>
+  bind_rows(ref_group)
+```
 
 ```{r}
+insertion_master_reg$Académie <-
+  as.character(insertion_master_reg$Académie)
+
+insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
+```
+
+```{r}
+insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
+insertion_master_reg$Domaine <- factor(insertion_master_reg$Domaine)
+insertion_master_reg$Académie <- factor(insertion_master_reg$Académie)
+insertion_master_reg$situation <- factor(insertion_master_reg$situation)
+
+
+insertion_master_reg$Établissement <- relevel(insertion_master_reg$Établissement, ref = "Toutes universités et établissements assimilés")
+insertion_master_reg$situation <- relevel(insertion_master_reg$situation, ref = "18 mois après le diplôme") 
+
+regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + situation + `% de diplômés boursiers`, data = insertion_master_reg)
+summary(regression_uni)
+```
+
+Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
+```{r}
+academie_groups <- split(insertion_master_reg, insertion_master_reg$Académie)
+lapply(academie_groups, function(insertion_master_reg) {
+  sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
+    length(unique(var))
+  })
+})
+
+valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
+    length(unique(var)) > 1
+  })
+
+```
+
+
+```{r}
+
+regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg){
+  regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + situation + `% de diplômés boursiers`, data = insertion_master_reg)
+  return(regression_uni)
+})
 
 ```
 
