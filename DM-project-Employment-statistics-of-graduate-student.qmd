@@ -460,6 +460,7 @@ summary(regression_uni)
 ```
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
+
 ```{r}
 academie_groups <- split(insertion_master_reg, insertion_master_reg$Académie)
 lapply(academie_groups, function(insertion_master_reg) {
@@ -467,7 +468,9 @@ lapply(academie_groups, function(insertion_master_reg) {
     length(unique(var))
   })
 })
+```
 
+```{r}
 valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
     length(unique(var)) > 1
   })
