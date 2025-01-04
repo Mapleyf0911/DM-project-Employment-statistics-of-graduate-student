@@ -118,13 +118,6 @@ pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Inco
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
 
-|                                         |                                         |
-|-----------------------------------------|-----------------------------------------|
-| Number of socio-professional categories | `r (NROW(wages_profession_gender)-2)/2` |
-| National mean for men                   | `r wages_profession_gender[10,4]`       |
-| National mean for women                 | `r wages_profession_gender[10,3]`       |
-| IDF mean for men                        | `r wages_profession_gender[5,4]`        |
-| IDF mean for women                      | `r wages_profession_gender[5,3]`        |
 
 <small>**Note:** IDF (Île-de-France)</small>
 
@@ -266,8 +259,9 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-For this question, we tried to find the "best fields/specializations" from two perspectives.
+  For this question, we tried to find the "best fields/specializations" from two perspectives.
 We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
+
 ```{r}
 max_salary_domain <- best_specializations_max |>
   group_by(Domaine) |>
@@ -320,6 +314,8 @@ best_domain_long <- best_domain_mean |>
 best_domain_long <- best_domain_long |>
   mutate(Metric = factor(Metric, levels = c("MeanSalaire", "MeanInsertionRate", "MeanStableEmployment")))
 ```
+
+
 
 ```{r}
 #| fig-width: 10
@@ -479,11 +475,11 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 
 
 ```{r}
-
-regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg){
-  regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + situation + `% de diplômés boursiers`, data = insertion_master_reg)
-  return(regression_uni)
-})
+#'[Temporairement désactivé pour pouvoir créer le pdf]
+##regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg){
+##  regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + ##situation + `% de diplômés boursiers`, data = insertion_master_reg)
+##  return(regression_uni)
+##})
 
 ```
 
@@ -492,6 +488,12 @@ regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg
 
 
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
+
+```{r}
+nat_net_avg <- mean(insertion_master_panel$`Salaire net médian des emplois à temps plein`, na.rm = TRUE)
+```
+
+The national net monthly average wage is `r wages_profession_gender[10,5]` €, while the net monthly average wage of the surveyed students is `r show(nat_net_avg)` €.
 
 
 
@@ -585,7 +587,6 @@ aggregate_femme <- aggregate_data |>
 aggregate_femme |> filter(`Taux de femmes` > average_femme) |>
   arrange(desc(`Taux de femmes`) ) |>
   mutate(nb_of_sd = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |> knitr::kable()
-
 
 ```
 
