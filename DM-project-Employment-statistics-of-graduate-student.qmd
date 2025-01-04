@@ -398,7 +398,8 @@ merged_table[is.na(merged_table)] <- "..."
 
 kable(merged_table, align = "c", caption = "Average Salaries of Economics Graduates 30 Months Post-Graduation")
 ```
-From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
+
+  From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
 
 ===
 Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. 
@@ -541,12 +542,14 @@ insertion_master_panel |>
 ```
 
 
+
 ```{r}
 insertion_master_panel |>
   filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
   group_by(Académie,Domaine) |>
   summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
-  slice(which.min(`%_ext`)) |> knitr::kable()
+  slice(which.min(`%_ext`)) |>
+    arrange(desc(`%_ext`)) |> knitr::kable()
  
 ```
 
@@ -559,18 +562,30 @@ insertion_master_panel |>
 
 ### Q6: Do some specializations attract more women/scholarship students ? 
 
-```{r}
-## Determining the
-average_femme <- mean(insertion_master_panel$`% femmes`, na.rm = TRUE)
 
+```{r}
+## Determining the rounded mean % of women in our survey
+average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
+stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
+``` 
+
+
+In our survey, there is an average `r paste(average_femme)` % of women. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain: 
+
+```{r}
 ## Computing the means over the 11 years 
 aggregate_femme <- aggregate_data |>
   filter(!is.na(`% femmes`)) |>
   group_by(Discipline) |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
-aggregate_femme |> filter(`Taux de femmes` > average_femme) |> knitr::kable()
+aggregate_femme |> filter(`Taux de femmes` > average_femme) |>
+  arrange(desc(`Taux de femmes`) ) |>
+  mutate(nb_of_sd = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |> knitr::kable()
+
 
 ```
 
 ## Conclusion 
+
+
