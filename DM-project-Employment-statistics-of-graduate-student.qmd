@@ -505,6 +505,7 @@ insertion_master_panel |>
 ```{r}
 ## Determining the rounded mean % of women in our survey
 average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
+stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
 ``` 
 
 In our survey, there is an average `r paste(average_femme)` % of women. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain: 
@@ -516,8 +517,7 @@ aggregate_femme <- aggregate_data |>
   group_by(Discipline) |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
-aggregate_femme |> filter(`Taux de femmes` > average_femme) |> arrange(desc(`Taux de femmes`) ) |>
-  knitr::kable()
+aggregate_femme |> filter(`Taux de femmes` > average_femme) |> arrange(desc(`Taux de femmes`) ) |> mutate(nb_of_sd = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |> knitr::kable()
 
 
 ```
