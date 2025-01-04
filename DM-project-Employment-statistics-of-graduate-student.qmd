@@ -200,6 +200,7 @@ aggregate_data <- insertion_master_panel |>
 ## removing aggregate observations from main dataset 
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 
+
 ```
 
 In our data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
@@ -250,7 +251,7 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 
 
-Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+### Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 ```{r}
 best_specializations_max <- insertion_master_panel |>
@@ -364,7 +365,7 @@ I don't try the aggregate observations for the Q1, but you can compare the two m
 
 
 
-Q2: Is the university that one goes to a significant factor to explain wages? 
+### Q2: Is the university that one goes to a significant factor to explain wages? 
 
 To explore this question, let's first have a look at the summary of the salary data for economics graduates from different universities. Here, we use the data collected 30 months after graduation.
 
@@ -423,13 +424,15 @@ Here, we need to set dummy variables for categorial variables and define referen
 
 ```
 
-===
 
 
 
 
+### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
 
+
+### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
 
 
 ```{r}
@@ -440,21 +443,75 @@ insertion_master_panel |>
 ```
 
 
-Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields? Using the results of the first question and data from the additional data set, various plot representations could be meaningful.
+
+### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done? 
 
 ```{r}
+## The columns '% emplois extérieurs à la région de l'université', '% femmes' and '% de diplômés boursiers' have to be converted into numerical values for Q5 and Q6. 
+aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
+
+aggregate_data |> filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Domaine) |>
+  summarise(`Taux d'employés en dehors de la région` = mean(`% emplois extérieurs à la région de l’université`))
+```
+
+
+
+```{r}
+insertion_master_panel[, c(26, 27)] <- sapply(insertion_master_panel[, c(26, 27)], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
+
+insertion_master_panel |>
+  filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Académie,Domaine) |>
+  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
+  slice(which.max(`%_ext`)) |> knitr::kable()
+  
 
 ```
 
 
-Q4:  Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
+```{r}
+insertion_master_panel |>
+  filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
+  group_by(Académie,Domaine) |>
+  summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
+  slice(which.min(`%_ext`)) |> knitr::kable()
+ 
+```
 
-Q5: Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level. 
 
-Q6: Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
+
+-- Pas définitif 
+ 
+
+
+### Q6: Do some specializations attract more women/scholarship students ? 
+
+```{r}
+## Determining the
+average_femme <- mean(insertion_master_panel$`% femmes`, na.rm = TRUE)
+
+## Computing the means over the 11 years 
+aggregate_femme <- aggregate_data |>
+  filter(!is.na(`% femmes`)) |>
+  group_by(Discipline) |>
+  summarise(`Taux de femmes` = mean(`% femmes`))
+
+aggregate_femme |> filter(`Taux de femmes` > average_femme) |> knitr::kable()
+
+```
 
 ## Conclusion 
-
-
-
