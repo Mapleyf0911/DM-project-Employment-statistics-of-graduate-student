@@ -381,10 +381,12 @@ merged_table[is.na(merged_table)] <- "..."
 kable(merged_table, align = "c", caption = "Average Salaries of Economics Graduates 30 Months Post-Graduation")
 ```
 
-From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
+From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. However, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation and the number of months since graduation. For most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other factors when we do the further analysis in the next part.
 
 
-**Another way to represent the results - test before regression**
+From the graphs below, we can notice an evident increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
+
+However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which corresponds to our findings before.
 
 ```{r}
 #| fig-width: 11
@@ -407,7 +409,12 @@ ggplot(insertion_master_IDF, aes(x = Établissement, y = `Salaire brut annuel es
   theme(
     axis.text.x = element_blank(),  
   ) +
-  facet_wrap(vars(situation))
+  facet_wrap(vars(situation)) +
+  labs(
+    title = "Estimated Average Annual Salaries of Graduates from Different Universities in Paris",
+    x = "University",
+    y = "Estimated Average Annual Salary (€)"
+  )
 ```
 
 ```{r}
@@ -426,12 +433,18 @@ insertion_master_hors_IDF <- insertion_master_hors_IDF |>
     "Lettres, langues, arts"
   )))
 
+
 ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annuel estimé`, color=Domaine)) +
   geom_point(alpha = 0.3) +
   theme(
     axis.text.x = element_blank(),  
   ) +
-  facet_wrap(vars(situation))
+  facet_wrap(vars(situation))+
+  labs(
+    title = "Estimated Average Annual Salaries of Graduates from Different Universities outside IDF",
+    x = "University",
+    y = "Estimated Average Annual Salary (€)"
+  )
 ```
 
 
