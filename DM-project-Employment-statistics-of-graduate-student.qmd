@@ -120,7 +120,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 <small>**Note:** IDF (Île-de-France)</small>
 
-#### Dataset joining
+#### Data set joining
 
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set.
 
@@ -152,7 +152,7 @@ In our main data set, there are 35 variables. Some of them might be superfluous 
 
 -   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including "inactives" (neither working nor in search of employment.) while the insertion rate does not include them.
 
-Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the original dataset.
+Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the original data set.
 
 ```{r}
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
@@ -160,7 +160,7 @@ insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35)
 
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
 
--   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
+-   The identifier is called "obs_ID" and is made of the concatenation of "Année", "Numéro de l'établissement" and "cle_disc".
 
 ```{r}
 ## création clé 
@@ -168,17 +168,17 @@ insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
-In the "Remarque" column, there are five possible values for each observation:
+In the "Remarque" column, there are five possible values:
 
-1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables;
-2.  Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables;
-3.  Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%);
-4.  Université n'ayant pas participé à l'enquête;
-5.  N/A (no comment).
+1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables; \[inadequate size of graduates population\]
+2.  Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables; \[insufficient response rate\]
+3.  Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%); \[weak results\]
+4.  Université n'ayant pas participé à l'enquête; \[non-participating\]
+5.  N/A \[no comment\].
 
-Among all observations, only those where the "Remarque" column is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain the necessary data for further analysis (e.g., graduate employment rates and salary levels). Therefore, we will retain only those observations that meet these two conditions.
+Among all observations, only those where the "Remarque" is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain the necessary data for further analysis (e.g., graduate employment rates and salary levels). Therefore, we will retain only those observations that meet these two conditions.
 
-Some of the observations are on gathered data from all degrees of the same discipline, by year. As they are on national data, they are not related to any "académie". We will keep them for analysis purposes but after removing them from the main data set.
+Some of the observations are on aggreagate data from all degrees of the same discipline, by year. As they are on national data, they are not related to any specific "académie". We will keep them for analysis purposes but after removing them from the main data set.
 
 ```{r}
 ## removing 
@@ -232,12 +232,12 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 ## Data analysis
 
-|   Categories   |                             Number                              |
-|:----------------------:|:----------------------------------------------:|
-|   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
-| Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
-|    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
-|  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
+|          Categories           |                             Number                              |
+|:-----------------------:|:---------------------------------------------:|
+|           Académies           |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
+| Etablissements (universities) | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
+|       Domaines (fields)       |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
+| Disciplines (specializations) |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
 ### Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
@@ -473,11 +473,19 @@ The national net monthly average wage is `r wages_profession_gender[10,5]` €, 
 
 ### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
+We compute the average insertion rate for the observations collected 18 months post-graduation and those collected 30 months post-graduation, as well as their respective standard deviation.
+
 ```{r}
 insertion_master_panel |>
   group_by(situation) |>
-  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |> knitr::kable(digits = 3, align = "c")
+  summarize(`Mean insertion rate` = mean(`Taux d’insertion`, na.rm = TRUE),
+            `σ insertion rate` = sd(`Taux d’insertion`, na.rm = TRUE) ) |>
+  knitr::kable(digits = 3, align = "c")
+
+mean_insertion <- round(mean(insertion_master_panel$`Taux d’insertion`, na.rm = TRUE), 2)
 ```
+
+Overall, the average insertion rate is `r show(mean_insertion)` . The moment of collection does not seem to be relevant.
 
 ### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done?
 
@@ -550,11 +558,17 @@ aggregate_femme <- aggregate_data |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
 #'[Keeping the discipline with a higher than average % of women]
-aggregate_femme |> filter(`Taux de femmes` > average_femme) |>
+aggregate_femme |>
+  filter(`Taux de femmes` > average_femme) |>
   arrange(desc(`Taux de femmes`) ) |>
   mutate(`z-score` = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |>
-  knitr::kable(digits = 3, align = "c", caption = " Specializations with a higher than average proportion of women")
+  knitr::kable(digits = 3, align = "c",
+               caption = " Specializations with a higher than average proportion of women")
 
 ```
+
+The z-score is the number of standard deviations between the observed value and the mean.
+
+We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5).
 
 ## Conclusion
