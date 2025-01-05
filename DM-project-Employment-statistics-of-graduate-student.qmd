@@ -43,7 +43,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions, nonetheless this may help define guidelines for a bigger project.
 
-## The datasets
+## The data sets
 
 ### Data import
 
@@ -51,7 +51,7 @@ We aim to analyze the employability, situation of employment and salary of gradu
 
 Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focus on French graduate students who have completed their initial training ("formation initiale" in French) and have not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time points: 18 months and 30 months after their graduation.
 
-#### Main dataset
+#### Main data set
 
 ```{r}
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
@@ -117,12 +117,9 @@ pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Inco
 ```{r}
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
-
-<small>**Note:** IDF (Île-de-France)</small>
-
 #### Data set joining
 
-Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set.
+Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set "insertion_master_panel".
 
 ```{r}
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
@@ -144,11 +141,11 @@ insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_na
 
 In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis.
 
--   "Etablissement actuel" (the 5th column) just gives the exact full name of the university, but in reality we know the corresponding university from the abbreviation, so this column is not very helpful to our research and can bu deleted.
+-   "Etablissement actuel" (the 5th column) just gives the exact full name of the university, but in reality we know the corresponding university from the abbreviation.
 
--   "cle_ETAB" (the 33th column) could be obtained using more explicit columns. It is redundant.
+-   "cle_ETAB" (the 33th column) could be obtained using more explicit columns.
 
--   "Id_Paysage" (the 35th column) is redundant. It has the same purpose as "Code de l'établissement".
+-   "Id_Paysage" (the 35th column) has the same purpose as "Code de l'établissement".
 
 -   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including "inactives" (neither working nor in search of employment.) while the insertion rate does not include them.
 
@@ -170,7 +167,7 @@ insertion_master_panel <- insertion_master_panel |>
 
 In the "Remarque" column, there are five possible values:
 
-1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables; \[inadequate size of graduates population\]
+1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables;  \[Inadequate Size of Graduates Population\]
 2.  Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables; \[insufficient response rate\]
 3.  Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%); \[weak results\]
 4.  Université n'ayant pas participé à l'enquête; \[non-participating\]
@@ -195,10 +192,10 @@ insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 
 ```
 
-In our data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+In the data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
-selected_columns <- insertion_master_panel[, 14:32]
+selected_columns <- insertion_master_panel[, 13:29]
 
 is_non_numeric <- function(x) {
   !is.numeric(suppressWarnings(as.numeric(as.character(x)))) | is.na(x)
