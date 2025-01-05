@@ -441,6 +441,7 @@ insertion_master_reg$Académie <-
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
 
+
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
 insertion_master_reg$Domaine <- factor(insertion_master_reg$Domaine)
@@ -497,14 +498,13 @@ The national net monthly average wage is `r wages_profession_gender[10,5]` €, 
 
 
 
-### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
+### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? 
 
 
 ```{r}
 insertion_master_panel |>
   group_by(situation) |>
-  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |>
-  knitr::kable()
+  summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |> knitr::kable(digits = 3, align = "c")
 ```
 
 
@@ -541,7 +541,8 @@ insertion_master_panel |>
   filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
   group_by(Académie,Domaine) |>
   summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
-  slice(which.max(`%_ext`)) |> knitr::kable()
+  slice(which.max(`%_ext`)) |> arrange(desc(`%_ext`)) |>
+  knitr::kable(digits = 3, align = "c", caption = "Specializations with the highest rate of graduates working outside of their region of graduation")
   
 
 ```
@@ -549,12 +550,14 @@ insertion_master_panel |>
 
 
 ```{r}
+
 insertion_master_panel |>
   filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
   group_by(Académie,Domaine) |>
   summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
   slice(which.min(`%_ext`)) |>
-    arrange(desc(`%_ext`)) |> knitr::kable()
+    arrange(desc(`%_ext`)) |>
+  knitr::kable(digits = 3, align = "c", caption = "Specializations with the lowest rate of graduates working outside of their region of graduation")
  
 ```
 
@@ -569,24 +572,26 @@ insertion_master_panel |>
 
 
 ```{r}
-## Determining the rounded mean % of women in our survey
+## Determining the rounded mean and standard deviation % of women in our survey
 average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
 stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
 ``` 
 
 
-In our survey, there is an average `r paste(average_femme)` % of women. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain: 
+In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)`. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain: 
 
 ```{r}
-## Computing the means over the 11 years 
+#'[Creating a data frame with the mean % of women per discipline over the 11 years.] 
 aggregate_femme <- aggregate_data |>
   filter(!is.na(`% femmes`)) |>
   group_by(Discipline) |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
+#'[Keeping the discipline with a higher than average % of women]
 aggregate_femme |> filter(`Taux de femmes` > average_femme) |>
   arrange(desc(`Taux de femmes`) ) |>
-  mutate(nb_of_sd = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |> knitr::kable()
+  mutate(`z-score` = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |>
+  knitr::kable(digits = 3, align = "c", caption = " Specializations with a higher than average proportion of women")
 
 ```
 
