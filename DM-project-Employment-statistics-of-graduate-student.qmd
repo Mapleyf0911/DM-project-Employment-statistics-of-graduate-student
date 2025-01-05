@@ -84,6 +84,7 @@ In this data set, each observation includes:
 
 -   First and third quartiles regional net monthly salaries. <br>
 
+
 #### Complementary data set
 
 For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
@@ -198,13 +199,14 @@ In the data set "insertion_master_panel", many values are missing, due to absenc
 selected_columns <- insertion_master_panel[, 13:29]
 
 is_non_numeric <- function(x) {
-  !is.numeric(suppressWarnings(as.numeric(as.character(x)))) | is.na(x)
+  as.character(x) == "ns" | as.character(x) == "nd" | as.character(x) == "fe" | as.character(x) == "." | is.na(x)
 }
 non_numeric_counts <- sapply(selected_columns, function(column){
   sum(is_non_numeric(column))
 })
   
 kable(data.frame(non_numeric_counts))
+
 ```
 
 ```{r}
