@@ -457,11 +457,9 @@ $$
 Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Field_k} + \sum_{l=1}^{L-1} \delta_l D_{Situation_l} + \phi \cdot RegionalSalary + \epsilon_i
 $$ Where:<br> - $Y_i$: Estimated annual salaries.<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Field_k}$: Dummy variables for fields.<br> - $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation).<br> - $RegionalSalary$: Regional median net monthly salary.<br>
 
-**Data Preparation**
-
-Here, we need to set dummy variables for categorial variables and define reference categories.
 
 ```{r}
+# Data Preparation for regression
 insertion_master_reg <- insertion_master_panel[, c(1, 4, 6, 8, 11, 20:22, 24)]
 ref_group <- aggregate_data[, c(1, 4, 6, 8, 11, 20:22, 24)]
 
@@ -484,6 +482,8 @@ insertion_master_reg$Académie <-
 
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
+
+We need to set a reference group for each categorical variable when creating dummy variables. For the variable "Établissement," we select "Toutes universités et établissements assimilés" as the reference group. This choice allows us to compare the performance of individual universities against the average performance of all universities in our dataset. For the variable "Domaine," we choose "Masters enseignement" as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from "Masters enseignement" and those from the other four fields. And for the variable "situation," which has only two possible values, either value can serve as the reference group.
 
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
@@ -509,6 +509,19 @@ kable(coefficients_table, format = "html", caption = "Regression Coefficients Ta
       col.names = c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "Significance"))
   
 ```
+From the result of our regression, we can easily find that all the variables except Universities play an important role in the annual salary of graduates at the *** significance level. 
+
+**Pas fini ici**
+
+```{r}
+
+
+
+```
+
+
+
+
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
 
