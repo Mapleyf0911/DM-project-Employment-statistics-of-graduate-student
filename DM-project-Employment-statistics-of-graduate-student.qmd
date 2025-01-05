@@ -37,7 +37,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
 
--   Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level. 
+-   Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level.
 
 -   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
@@ -118,7 +118,6 @@ pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Inco
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
 
-
 <small>**Note:** IDF (Île-de-France)</small>
 
 #### Dataset joining
@@ -159,7 +158,6 @@ Therefore, we can delete the 5th, 18th, 19th, 33th and 35th columns in the origi
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
-
 However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master program, we have to create another variable (or primary key).
 
 -   The identifier is called "obs_ID" and is made of the concatenation of "Annee", "Numéro de l'établissement" and "cle_disc".
@@ -172,15 +170,15 @@ insertion_master_panel <- insertion_master_panel |>
 
 In the "Remarque" column, there are five possible values for each observation:
 
-1. Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables;
-2. Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables;
-3. Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%);
-4. Université n'ayant pas participé à l'enquête;
-5. N/A (no comment).
+1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables;
+2.  Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables;
+3.  Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%);
+4.  Université n'ayant pas participé à l'enquête;
+5.  N/A (no comment).
 
 Among all observations, only those where the "Remarque" column is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain the necessary data for further analysis (e.g., graduate employment rates and salary levels). Therefore, we will retain only those observations that meet these two conditions.
 
-Some of the observations are on gathered data from all degrees of the same discipline, by year. As they are on national data, they are not related to any "académie". We will keep them for analysis purposes but after removing them from the main data set. 
+Some of the observations are on gathered data from all degrees of the same discipline, by year. As they are on national data, they are not related to any "académie". We will keep them for analysis purposes but after removing them from the main data set.
 
 ```{r}
 ## removing 
@@ -212,7 +210,6 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 kable(data.frame(non_numeric_counts))
 ```
 
-
 ```{r}
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "ns", NA, x))
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == "nd", NA, x))
@@ -235,15 +232,12 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 ## Data analysis
 
-
 |   Categories   |                             Number                              |
-|:---------------------:|:----------------------------------------------:|
+|:----------------------:|:----------------------------------------------:|
 |   Académies    |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
 | Etablissements | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
 |    Domaines    |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 |  Disciplines   |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
-
-
 
 ### Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
@@ -259,8 +253,7 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-  For this question, we tried to find the "best fields/specializations" from two perspectives.
-We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
+For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -315,8 +308,6 @@ best_domain_long <- best_domain_long |>
   mutate(Metric = factor(Metric, levels = c("MeanSalaire", "MeanInsertionRate", "MeanStableEmployment")))
 ```
 
-
-
 ```{r}
 #| fig-width: 10
 #| fig-height: 6
@@ -342,7 +333,6 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
 
 ```
 
-
 ```{r}
 best_specializations_mean <- insertion_master_panel |>
   group_by(Discipline, Domaine) |>
@@ -355,14 +345,11 @@ best_specializations_mean <- insertion_master_panel |>
   arrange(desc(MeanSalaire))
 ```
 
-
-NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year. 
+NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year.
 
 I don't try the aggregate observations for the Q1, but you can compare the two methods to see if the code above have any necessity to modify. --Yufeng
 
-
-
-### Q2: Is the university that one goes to a significant factor to explain wages? 
+### Q2: Is the university that one goes to a significant factor to explain wages?
 
 To explore this question, let's first have a look at the summary of the salary data for economics graduates from different universities. Here, we use the data collected 30 months after graduation.
 
@@ -395,10 +382,9 @@ merged_table[is.na(merged_table)] <- "..."
 kable(merged_table, align = "c", caption = "Average Salaries of Economics Graduates 30 Months Post-Graduation")
 ```
 
-  From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
+From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. Of course, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation. For most industries, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other when we do the further analysis in the next part.
 
-===
-Note: In order to do the regression, we need to convert the variable Établissement into dummy variable. 
+=== Note: In order to do the regression, we need to convert the variable Établissement into dummy variable.
 
 **Regression model**
 
@@ -406,12 +392,7 @@ To analyze the effect of universities on graduate salaries while controlling the
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Major_k} + \sum_{l=1}^{L-1} \delta_l D_{City_l} + \phi \cdot Duration + \epsilon_i
-$$
-Where:<br>
-- $D_{University_j}$: Dummy variables for universities.<br>
-- $D_{Major_k}$: Dummy variables for majors.<br>
-- $D_{City_l}$: Dummy variables for cities.<br>
-- $Duration$: Graduation duration (18 or 30 months).<br>
+$$ Where:<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Major_k}$: Dummy variables for majors.<br> - $D_{City_l}$: Dummy variables for cities.<br> - $Duration$: Graduation duration (18 or 30 months).<br>
 
 **Data Preparation**
 
@@ -440,7 +421,6 @@ insertion_master_reg$Académie <-
 
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
-
 
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
@@ -474,7 +454,6 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 
 ```
 
-
 ```{r}
 #'[Temporairement désactivé pour pouvoir créer le pdf]
 ##regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg){
@@ -484,10 +463,6 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 
 ```
 
-
-
-
-
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
 ```{r}
@@ -496,10 +471,7 @@ nat_net_avg <- mean(insertion_master_panel$`Salaire net médian des emplois à t
 
 The national net monthly average wage is `r wages_profession_gender[10,5]` €, while the net monthly average wage of the surveyed students is `r show(nat_net_avg)` €.
 
-
-
-### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? 
-
+### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
 ```{r}
 insertion_master_panel |>
@@ -507,9 +479,9 @@ insertion_master_panel |>
   summarize(moyenne_taux_d_insertion = mean(`Taux d’insertion`, na.rm = TRUE)) |> knitr::kable(digits = 3, align = "c")
 ```
 
+### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done?
 
-
-### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done? 
+We try to look at the percentage of graduates working outside of their region of graduation for all "académies", depending on the specialization. The two tables below show the specializations with the highest and lowest rates of graduates leaving for each "académie".
 
 ```{r}
 ## The columns '% emplois extérieurs à la région de l'université', '% femmes' and '% de diplômés boursiers' have to be converted into numerical values for Q5 and Q6. 
@@ -521,12 +493,7 @@ aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], funct
   }
 })
 
-aggregate_data |> filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
-  group_by(Domaine) |>
-  summarise(`Taux d'employés en dehors de la région` = mean(`% emplois extérieurs à la région de l’université`))
 ```
-
-
 
 ```{r}
 insertion_master_panel[, c(26, 27)] <- sapply(insertion_master_panel[, c(26, 27)], function(x){
@@ -547,8 +514,6 @@ insertion_master_panel |>
 
 ```
 
-
-
 ```{r}
 
 insertion_master_panel |>
@@ -561,24 +526,21 @@ insertion_master_panel |>
  
 ```
 
+-   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education.
 
+-   For the regions of Guadeloupe and Guyane, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
 
+-   The "académies" with the lowest rates of graduates leaving are Paris, Versailles and Créteil. A possible explanation is that these are the three "académies" of the Île-de-France region, the main economic center of the country.
 
--- Pas définitif 
- 
-
-
-### Q6: Do some specializations attract more women/scholarship students ? 
-
+### Q6: Do some specializations attract more women/scholarship students ?
 
 ```{r}
 ## Determining the rounded mean and standard deviation % of women in our survey
 average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
 stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
-``` 
+```
 
-
-In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)`. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain: 
+In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)`. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain:
 
 ```{r}
 #'[Creating a data frame with the mean % of women per discipline over the 11 years.] 
@@ -595,6 +557,4 @@ aggregate_femme |> filter(`Taux de femmes` > average_femme) |>
 
 ```
 
-## Conclusion 
-
-
+## Conclusion
