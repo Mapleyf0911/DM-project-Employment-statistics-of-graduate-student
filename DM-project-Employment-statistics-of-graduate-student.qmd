@@ -20,6 +20,7 @@ library(purrr)
 library(knitr)
 library(broom)
 library(fastDummies)
+library(kableExtra)
 theme_set(theme_bw())
 ```
 
@@ -453,8 +454,8 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
 To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
 
 $$
-Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Major_k} + \sum_{l=1}^{L-1} \delta_l D_{City_l} + \phi \cdot Duration + \epsilon_i
-$$ Where:<br> - $Y_i$: Estimated annual salaries.<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Major_k}$: Dummy variables for fields.<br> - $D_{City_l}$: Dummy variables for cities.<br> - $Duration$: Graduation duration (18 or 30 months).<br>
+Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Field_k} + \sum_{l=1}^{L-1} \delta_l D_{Situation_l} + \phi \cdot RegionalSalary + \epsilon_i
+$$ Where:<br> - $Y_i$: Estimated annual salaries.<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Field_k}$: Dummy variables for fields.<br> - $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation).<br> - $RegionalSalary$: Regional median net monthly salary.<br>
 
 **Data Preparation**
 
@@ -492,10 +493,21 @@ insertion_master_reg$situation <- factor(insertion_master_reg$situation)
 
 
 insertion_master_reg$Établissement <- relevel(insertion_master_reg$Établissement, ref = "Toutes universités et établissements assimilés")
+insertion_master_reg$Domaine <- relevel(insertion_master_reg$Domaine, ref = "Masters enseignement") 
 insertion_master_reg$situation <- relevel(insertion_master_reg$situation, ref = "18 mois après le diplôme") 
 
+
 regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + situation + `Salaire net mensuel médian régional`, data = insertion_master_reg)
-summary(regression_uni)
+summary_result <- summary(regression_uni)
+
+coefficients_table <- as.data.frame(summary_result$coefficients)
+
+coefficients_table$Significance <- symnum(coefficients_table$`Pr(>|t|)`,
+                                          cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
+                                          symbols = c("***", "**", "*", ".", " "))
+kable(coefficients_table, format = "html", caption = "Regression Coefficients Table",
+      col.names = c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "Significance"))
+  
 ```
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
