@@ -579,17 +579,7 @@ kable(coefficients_table, format = "html", caption = "Regression Coefficients Ta
   
 ```
 
-**Pas fini ici**
-
-```{r}
-
-
-
-```
-
-
-
-
+**MAYBE DELETE THE FOLLOWING PART OF Q2**
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
 
@@ -617,6 +607,8 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 ##})
 
 ```
+===
+
 
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
@@ -724,8 +716,15 @@ aggregate_femme |>
 The z-score is the number of standard deviations between the observed value and the mean.
 
 We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5).
+
 The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of ~1, or a 0.5σ difference from the first two specializations. 
 
 Now, let's focus on the percentage of scholarship students in our survey. 
+
+```{r}
+## Determining the rounded mean and standard deviation % of scholarship students in our survey
+average_scholarship <- round(mean(insertion_master_panel$`% de diplômés boursiers`, na.rm = TRUE), 2)
+stdev_scholarship <- round(sd(insertion_master_panel$`% de diplômés boursiers`, na.rm = TRUE),2)
+```
 
 ## Conclusion
