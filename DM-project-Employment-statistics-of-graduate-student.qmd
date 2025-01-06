@@ -567,17 +567,31 @@ insertion_master_reg$situation <- relevel(insertion_master_reg$situation, ref = 
 
 
 regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + situation + `Salaire net mensuel médian régional`, data = insertion_master_reg)
-summary_result <- summary(regression_uni)
 
-coefficients_table <- as.data.frame(summary_result$coefficients)
-
-coefficients_table$Significance <- symnum(coefficients_table$`Pr(>|t|)`,
+reg_result_table <- tidy(regression_uni)
+reg_result_table$Significance <- symnum(reg_result_table$`p.value`,
                                           cutpoints = c(0, 0.001, 0.01, 0.05, 0.1, 1),
                                           symbols = c("***", "**", "*", ".", " "))
-kable(coefficients_table, format = "html", caption = "Regression Coefficients Table",
-      col.names = c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "Significance"))
-  
 ```
+
+```{r}
+reg_result_table$Category <- ifelse(grepl("^Établissement", reg_result_table$term), "University",
+                                   ifelse(grepl("^Domaine", reg_result_table$term), "Field",
+                                          ifelse(grepl("^situation", reg_result_table$term), "Situation",
+                                                 ifelse(reg_result_table$term == "(Intercept)", "Intercept",
+                                                        "RegionalSalary"))))
+
+
+reg_result_summary <- reg_result_table |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  select(!Category) |>
+  filter(Significance == "***") 
+  
+kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)")
+
+
+```
+
 
 **MAYBE DELETE THE FOLLOWING PART OF Q2**
 
@@ -728,3 +742,12 @@ stdev_scholarship <- round(sd(insertion_master_panel$`% de diplômés boursiers`
 ```
 
 ## Conclusion
+
+
+## Appendix
+
+```{r}
+#Regression result of Question 2
+summary(regression_uni)
+```
+
