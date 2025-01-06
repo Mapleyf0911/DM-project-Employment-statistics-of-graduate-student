@@ -537,6 +537,12 @@ insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université
 
 We need to set a reference group for each categorical variable when creating dummy variables. For the variable "Établissement," we select "Toutes universités et établissements assimilés" as the reference group. This choice allows us to compare the performance of individual universities against the average performance of all universities in our dataset. For the variable "Domaine," we choose "Masters enseignement" as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from "Masters enseignement" and those from the other four fields. And for the variable "situation," which has only two possible values, either value can serve as the reference group.
 
+**Interpretation of Regression Results**
+
+Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with response Variable ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.
+
+In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation* ($D_{Situation}$), and regional salary levels ($\text{RegionalSalary}$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
+
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
 insertion_master_reg$Domaine <- factor(insertion_master_reg$Domaine)
@@ -561,7 +567,6 @@ kable(coefficients_table, format = "html", caption = "Regression Coefficients Ta
       col.names = c("Estimate", "Std. Error", "t value", "Pr(>|t|)", "Significance"))
   
 ```
-From the result of our regression, we can easily find that all the variables except Universities play an important role in the annual salary of graduates at the *** significance level. 
 
 **Pas fini ici**
 
