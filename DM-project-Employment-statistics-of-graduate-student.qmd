@@ -3,7 +3,10 @@ title: "DMC Project: Employment statistics of graduate students"
 author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
-  wordcount-pdf: default 
+  wordcount-pdf:
+    indent: true
+    first-line-indent:
+      size: 1.5em
 execute: 
   echo: false
   warning: false
@@ -27,7 +30,6 @@ theme_set(theme_bw())
 Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
 
 ## Goal of our research
-
 We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at various levels. Expressing these hypotheses, we obtain the following questions:
 
 -   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
@@ -119,9 +121,17 @@ pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Inco
 ```{r}
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
+
 #### Data set joining
 
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set "insertion_master_panel".
+
+```{r}
+#'[That chunk should only be executed once.]
+Net_wage_EQTP$`ile-de-France` <- Net_wage_EQTP$`ile-de-France`*1000
+Net_wage_EQTP$France <- Net_wage_EQTP$France*1000
+```
+
 
 ```{r}
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
@@ -135,8 +145,9 @@ if (rows_to_fill > 0) {
     bind_rows()
   Net_wage_EQTP_wide_regional_national <- bind_rows(Net_wage_EQTP_wide_regional_national, repeated_data)
 }
-
+#'[Joining of data sets]
 insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_national)
+
 ```
 
 ### Data cleaning
@@ -188,7 +199,7 @@ insertion_master_panel <- insertion_master_panel |>
 aggregate_data <- insertion_master_panel |> 
   filter(is.na(Académie))
 
-## removing aggregate observations from main dataset 
+## removing aggregate observations from main data set 
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 
 
@@ -610,10 +621,10 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
 ```{r}
-nat_net_avg <- mean(insertion_master_panel$`Salaire net médian des emplois à temps plein`, na.rm = TRUE)
+nat_net_avg <- round(mean(insertion_master_panel$`Salaire net médian des emplois à temps plein`, na.rm = TRUE), 3)
 ```
 
-The national net monthly average wage is `r wages_profession_gender[10,5]` €, while the net monthly average wage of the surveyed students is `r show(nat_net_avg)` €.
+The national net monthly average wage is `r wages_profession_gender[10,5]*1000` €, while the net monthly average wage of the surveyed students is `r paste(nat_net_avg)` €.
 
 ### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
@@ -629,7 +640,7 @@ insertion_master_panel |>
 mean_insertion <- round(mean(insertion_master_panel$`Taux d’insertion`, na.rm = TRUE), 2)
 ```
 
-Overall, the average insertion rate is `r show(mean_insertion)` . The moment of collection does not seem to be relevant.
+Overall, the average insertion rate is `r paste(mean_insertion)` % . The moment of collection does not seem to be relevant.
 
 ### Q5: Do some specializations require to leave the region of the “académie” where the master’s degree was done?
 
@@ -663,7 +674,6 @@ insertion_master_panel |>
   slice(which.max(`%_ext`)) |> arrange(desc(`%_ext`)) |>
   knitr::kable(digits = 3, align = "c", caption = "Specializations with the highest rate of graduates working outside of their region of graduation")
   
-
 ```
 
 ```{r}
@@ -714,5 +724,8 @@ aggregate_femme |>
 The z-score is the number of standard deviations between the observed value and the mean.
 
 We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5).
+The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of ~1, or a 0.5σ difference from the first two specializations. 
+
+Now, let's focus on the percentage of scholarship students in our survey. 
 
 ## Conclusion
