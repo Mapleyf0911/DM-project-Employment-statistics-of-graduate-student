@@ -232,6 +232,8 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 
 ## Data analysis
 
+After the data cleaning, we have the following summary of our data set:
+
 |          Categories           |                             Number                              |
 |:-----------------------:|:---------------------------------------------:|
 |           Académies           |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
@@ -345,9 +347,59 @@ best_specializations_mean <- insertion_master_panel |>
   arrange(desc(MeanSalaire))
 ```
 
-NOTE: We could use the aggregate observations for this question, looking at the best paying degree for each year.
+```{r}
+# Using aggregate data
+# Convert the character-formatted data values into numeric format
+cols_to_convert <- c(16:21, 23:29)
+aggregate_data[, cols_to_convert] <- sapply(aggregate_data[, cols_to_convert], function(x){
+  if (is.character(x)){
+    as.numeric(ifelse(is.na(x), NA, x))
+  } else {
+    x
+  }
+})
 
-I don't try the aggregate observations for the Q1, but you can compare the two methods to see if the code above have any necessity to modify. --Yufeng
+years_of_interest <- aggregate_data |>
+  select(Annee) |>
+  distinct()
+
+create_summary_table <- function(year) {
+  aggregate_data |>
+    filter(Annee == year) |>
+    group_by(Domaine) |>
+    summarise(
+      MeanSalaire = round(mean(`Salaire brut annuel estimé`), 2),
+      MeanInsertionRate = round(mean(`Taux d’insertion`, na.rm = TRUE), 2),
+      MeanStableEmployment = round(mean(`% emplois stables`, na.rm = TRUE), 2),
+      .groups = "drop"
+    ) |>
+    arrange(desc(MeanSalaire))
+}
+
+summary_tables <- lapply(years_of_interest$Annee, create_summary_table)
+
+# Show result by year 
+# Slight difference: in some years, graduates form "Droit, économie et gestion" received the highest pay, but "Sciences, technologies et santé" and "Droit, économie et gestion" always ranked 1st and 2nd among all fields )
+for (i in seq_along(summary_tables)) {
+  cat("Summary table for year", years_of_interest$Annee[i], ":\n")
+  print(summary_tables[[i]])
+  cat("\n")
+}
+
+
+# Show result ()
+aggregate_mean <- aggregate_data |>
+  group_by(Domaine) |>
+  summarise(
+    MeanSalaire = round(mean(`Salaire brut annuel estimé`, na.rm = TRUE), 2),
+    MeanInsertionRate = round(mean(`Taux d’insertion`, na.rm = TRUE), 2),
+    MeanStableEmployment = round(mean(`% emplois stables`, na.rm = TRUE), 2),
+    .groups = "drop"
+  ) |>
+  arrange(desc(MeanSalaire))
+
+kable(merged_domain_stats, caption = "Optimal Employment Perfomance by Domain")
+```
 
 ### Q2: Is the university that one goes to a significant factor to explain wages?
 
