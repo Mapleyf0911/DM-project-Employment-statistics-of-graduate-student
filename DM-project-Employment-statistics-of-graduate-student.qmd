@@ -621,7 +621,7 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 ##})
 
 ```
-===
+
 
 
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
@@ -631,6 +631,10 @@ nat_net_avg <- round(mean(insertion_master_panel$`Salaire net médian des emploi
 ```
 
 The national net monthly average wage is `r wages_profession_gender[10,5]*1000` €, while the net monthly average wage of the surveyed students is `r paste(nat_net_avg)` €.
+  We have to keep in mind that the people surveyed are at the very beginning of the professional careers and probably employed in entry-level jobs. A lower average wage is thus to be expected. 
+  This skews any analysis we could make with the complementary data set as it is not conditional on years of professional experience. 
+  Also, the specializations of the various graduate degrees are still too vague to be able to classify them in the different categories of any figure of the complementary data set. 
+
 
 ### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
