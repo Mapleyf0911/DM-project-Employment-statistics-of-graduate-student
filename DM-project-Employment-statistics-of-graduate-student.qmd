@@ -698,11 +698,13 @@ insertion_master_panel |>
  
 ```
 
--   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education.
+-   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education. It is interesting considering that new teachers typically do not choose where they work. 
 
--   For the regions of Guadeloupe and Guyane, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
+- The two specializations where most students move out of their region of graduation are science/technology/health and literature/languages/arts. 
 
--   The "académies" with the lowest rates of graduates leaving are Paris, Versailles and Créteil. A possible explanation is that these are the three "académies" of the Île-de-France region, the main economic center of the country.
+-   For the regions of Guadeloupe and French Guyana, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
+
+-   The "académies" with the lowest rates of graduates leaving are Paris, Versailles and Créteil. A possible explanation is that these are the three "académies" of the Île-de-France region, the main economic center of the country. These graduates are more likely to find employment (or at least employment with the highest salaries) in their region of graduation. 
 
 ### Q6: Do some specializations attract more women/scholarship students ?
 
