@@ -7,6 +7,7 @@ format:
     indent: true
     first-line-indent:
       size: 1.5em
+    tbl-cap-location: bottom
 execute: 
   echo: false
   warning: false
@@ -27,9 +28,11 @@ library(kableExtra)
 theme_set(theme_bw())
 ```
 
-Github repository: <https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
+Github repository: 
+<https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
 
 ## Goal of our research
+
 We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at various levels. Expressing these hypotheses, we obtain the following questions:
 
 -   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
@@ -87,7 +90,6 @@ In this data set, each observation includes:
 
 -   First and third quartiles regional net monthly salaries. <br>
 
-
 #### Complementary data set
 
 For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
@@ -98,7 +100,7 @@ The database (Flores 2018) covers all employers (civil service, private employer
 
 From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
-Source: <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.numero_de_l_etablissement&disjunctive.academie&sort=-salaire_net_median_des_emplois_a_temps_plein&refine.academie=Paris>
+Source: <https://www.insee.fr/fr/statistiques/5650198>
 
 This data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
 
@@ -131,7 +133,6 @@ Here, we get the panel data "insertion_master_panel" by joining the wage data fr
 Net_wage_EQTP$`ile-de-France` <- Net_wage_EQTP$`ile-de-France`*1000
 Net_wage_EQTP$France <- Net_wage_EQTP$France*1000
 ```
-
 
 ```{r}
 Net_wage_EQTP_wide_regional_national <- Net_wage_EQTP |>
@@ -180,7 +181,7 @@ insertion_master_panel <- insertion_master_panel |>
 
 In the "Remarque" column, there are five possible values:
 
-1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables;  \[Inadequate Size of Graduates Population\]
+1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables; \[Inadequate Size of Graduates Population\]
 2.  Université ayant participé à l'enquête mais dont le taux de réponse obtenu est insuffisant pour que les résultats soient jugés exploitables; \[insufficient response rate\]
 3.  Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%); \[weak results\]
 4.  Université n'ayant pas participé à l'enquête; \[non-participating\]
@@ -246,7 +247,7 @@ insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, col
 After the data cleaning, we have the following summary of our data set:
 
 |          Categories           |                             Number                              |
-|:-----------------------:|:---------------------------------------------:|
+|:-----------------------:|:--------------------------------------------:|
 |           Académies           |   `r insertion_master_panel |> distinct(Académie) |> nrow()`    |
 | Etablissements (universities) | `r insertion_master_panel |> distinct(Établissement) |> nrow()` |
 |       Domaines (fields)       |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
@@ -447,7 +448,6 @@ kable(merged_table, align = "c", caption = "Average Salaries of Economics Gradua
 
 From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. However, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation and the number of months since graduation. For most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other factors when we do the further analysis in the next part.
 
-
 From the graphs below, we can notice an evident increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
 
 However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which corresponds to our findings before.
@@ -511,7 +511,6 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
   )
 ```
 
-
 **Regression model**
 
 To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
@@ -519,7 +518,6 @@ To analyze the effect of universities on graduate salaries while controlling the
 $$
 Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Field_k} + \sum_{l=1}^{L-1} \delta_l D_{Situation_l} + \phi \cdot RegionalSalary + \epsilon_i
 $$ Where:<br> - $Y_i$: Estimated annual salaries.<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Field_k}$: Dummy variables for fields.<br> - $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation).<br> - $RegionalSalary$: Regional median net monthly salary.<br>
-
 
 ```{r}
 # Data Preparation for regression
@@ -552,7 +550,7 @@ We need to set a reference group for each categorical variable when creating dum
 
 Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with response Variable ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.
 
-In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation* ($D_{Situation}$), and regional salary levels ($\text{RegionalSalary}$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
+In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation\* ($D_{Situation}$), and regional salary levels ($\text{RegionalSalary}$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
 
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
@@ -592,7 +590,6 @@ kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)")
 
 ```
 
-
 **MAYBE DELETE THE FOLLOWING PART OF Q2**
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
@@ -622,19 +619,13 @@ valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "s
 
 ```
 
-
-
 ### Q3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
 ```{r}
 nat_net_avg <- round(mean(insertion_master_panel$`Salaire net médian des emplois à temps plein`, na.rm = TRUE), 3)
 ```
 
-The national net monthly average wage is `r wages_profession_gender[10,5]*1000` €, while the net monthly average wage of the surveyed students is `r paste(nat_net_avg)` €.
-  We have to keep in mind that the people surveyed are at the very beginning of the professional careers and probably employed in entry-level jobs. A lower average wage is thus to be expected. 
-  This skews any analysis we could make with the complementary data set as it is not conditional on years of professional experience. 
-  Also, the specializations of the various graduate degrees are still too vague to be able to classify them in the different categories of any figure of the complementary data set. 
-
+The national net monthly average wage is `r wages_profession_gender[10,5]*1000` €, while the net monthly average wage of the surveyed students is `r paste(nat_net_avg)` €. We have to keep in mind that the people surveyed are at the very beginning of the professional careers and probably employed in entry-level jobs. A lower average wage is thus to be expected. This skews any analysis we could make with the complementary data set as it is not conditional on years of professional experience. Also, the specializations of the various graduate degrees are still too vague to be able to classify them in the different categories of any figure of the complementary data set.
 
 ### Q4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
@@ -698,13 +689,13 @@ insertion_master_panel |>
  
 ```
 
--   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education. It is interesting considering that new teachers typically do not choose where they work. 
+-   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education. It is interesting considering that new teachers typically do not choose where they work.
 
-- The two specializations where most students move out of their region of graduation are science/technology/health and literature/languages/arts. 
+-   The two specializations where most students move out of their region of graduation are science/technology/health and literature/languages/arts.
 
 -   For the regions of Guadeloupe and French Guyana, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
 
--   The "académies" with the lowest rates of graduates leaving are Paris, Versailles and Créteil. A possible explanation is that these are the three "académies" of the Île-de-France region, the main economic center of the country. These graduates are more likely to find employment (or at least employment with the highest salaries) in their region of graduation. 
+-   The "académies" with the lowest rates of graduates leaving are Paris, Versailles and Créteil. A possible explanation is that these are the three "académies" of the Île-de-France region, the main economic center of the country. These graduates are more likely to find employment (or at least employment with the highest salaries) in their region of graduation.
 
 ### Q6: Do some specializations attract more women/scholarship students ?
 
@@ -737,9 +728,9 @@ The z-score is the number of standard deviations between the observed value and 
 
 We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5).
 
-The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of ~1, or a 0.5σ difference from the first two specializations. 
+The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of \~1, or a 0.5σ difference from the first two specializations.
 
-Now, let's focus on the percentage of scholarship students in our survey. 
+Now, let's focus on the percentage of scholarship students in our survey.
 
 ```{r}
 ## Determining the rounded mean and standard deviation % of scholarship students in our survey
@@ -749,11 +740,9 @@ stdev_scholarship <- round(sd(insertion_master_panel$`% de diplômés boursiers`
 
 ## Conclusion
 
-
 ## Appendix
 
 ```{r}
 #Regression result of Question 2
 summary(regression_uni)
 ```
-
