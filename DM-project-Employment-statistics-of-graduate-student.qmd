@@ -8,6 +8,7 @@ format:
     first-line-indent:
       size: 1.5em
     tbl-cap-location: bottom
+mainfront: Times New Roman
 execute: 
   echo: false
   warning: false
@@ -70,6 +71,7 @@ insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-
 
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
+
 In this data set, each observation includes:
 
 -   The year of the survey, the type of master's degree, the university number and the "académie" number and name;
@@ -98,9 +100,9 @@ The database Tous Salariés has all the information about employees. They use th
 
 The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the Ministry of Armed Forces (France). This database can be used to describe salaried employment across all sectors.
 
-From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
-
 Source: <https://www.insee.fr/fr/statistiques/5650198>
+
+From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. We estimate there are enough sectors included in the file to classify all graduate programs.
 
 This data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
 
@@ -124,7 +126,7 @@ pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Inco
 wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wages_EQTP_by_Socio-Professional_Category_and_Gender.csv"))
 ```
 
-#### Data set joining
+### Data set joining
 
 Here, we get the panel data "insertion_master_panel" by joining the wage data from the complementary data set to our main data set "insertion_master_panel".
 
@@ -202,8 +204,6 @@ aggregate_data <- insertion_master_panel |>
 
 ## removing aggregate observations from main data set 
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
-
-
 ```
 
 In the data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
@@ -219,7 +219,6 @@ non_numeric_counts <- sapply(selected_columns, function(column){
 })
   
 kable(data.frame(non_numeric_counts))
-
 ```
 
 ```{r}
@@ -344,7 +343,6 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   ) +
   scale_fill_brewer(palette = "Set2") +
   scale_x_discrete(limits = c("Sciences, technologies et santé", "Droit, économie et gestion", "Masters enseignement", "Sciences humaines et sociales", "Lettres, langues, arts")) 
-
 ```
 
 ```{r}
@@ -582,12 +580,11 @@ reg_result_table$Category <- ifelse(grepl("^Établissement", reg_result_table$te
 
 reg_result_summary <- reg_result_table |>
   mutate(across(where(is.numeric), ~round(., 3))) |>
+  mutate(across(c(estimate, std.error, statistic), ~round(., 2))) |>
   select(!Category) |>
   filter(Significance == "***") 
   
 kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)")
-
-
 ```
 
 **MAYBE DELETE THE FOLLOWING PART OF Q2**
@@ -596,6 +593,8 @@ Here, to control the effect of regional salary on the annual salary graduates ob
 
 ```{r}
 academie_groups <- split(insertion_master_reg, insertion_master_reg$Académie)
+list_of_dfs <- lapply(academie_groups, as.data.frame)
+
 lapply(academie_groups, function(insertion_master_reg) {
   sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
     length(unique(var))
