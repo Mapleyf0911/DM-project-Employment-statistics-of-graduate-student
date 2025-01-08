@@ -7,7 +7,12 @@ format:
     indent: true
     first-line-indent:
       size: 1.5em
-    tbl-cap-location: bottom
+    tbl-cap-location: top
+    geometry:
+      - top=1in
+      - left=1in
+      - right=1in
+      - bottom=1in
 mainfront: Times New Roman
 execute: 
   echo: false
@@ -26,11 +31,11 @@ library(knitr)
 library(broom)
 library(fastDummies)
 library(kableExtra)
+library(stringr)
 theme_set(theme_bw())
 ```
 
-Github repository: 
-<https://github.com/Mapleyf0911/DM-project-Employment-statistics-of-graduate-student.git>
+For more information, visit our Github repository at <https://github.com/Mapleyfo911/DM-project-Employment-statistics-of-graduate-student.git>.
 
 ## Goal of our research
 
@@ -64,10 +69,20 @@ Here, we are using employment statistics from the professional insertion survey 
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
 
-|                        |                            |
-|------------------------|----------------------------|
-| Number of observations | `r NROW(insertion_master)` |
-| Number of variables    | `r NCOL(insertion_master)` |
+Our main data set is about the professional insertion outcomes of Master's graduates from universities and equivalent-level institutions. The data set contains `r nrow(insertion_master)` observations and `r ncol(insertion_master)` variables in total.
+
+```{r}
+nrow_insertion_master <- nrow(insertion_master)
+ncol_insertion_master <- ncol(insertion_master)
+
+summary_stats <- data.frame(
+  "Statistic" = c("Number of observations", "Number of variables"),
+  "Value" = c(nrow_insertion_master, ncol_insertion_master)
+)
+
+kable(summary_stats, caption = "Summary Statistics of the Dataset") |>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+```
 
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
@@ -252,7 +267,7 @@ After the data cleaning, we have the following summary of our data set:
 |       Domaines (fields)       |    `r insertion_master_panel |> distinct(Domaine) |> nrow()`    |
 | Disciplines (specializations) |  `r insertion_master_panel |> distinct(Discipline) |> nrow()`   |
 
-### Q1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
+### Question 1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 ```{r}
 best_specializations_max <- insertion_master_panel |>
@@ -324,6 +339,7 @@ best_domain_long <- best_domain_long |>
 ```{r}
 #| fig-width: 10
 #| fig-height: 6
+#| warning: false
 
 ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   geom_bar(stat = "identity", position = "dodge", width = 0.8) +
@@ -358,6 +374,8 @@ best_specializations_mean <- insertion_master_panel |>
 ```
 
 ```{r}
+#| warning: false
+
 # Using aggregate data
 # Convert the character-formatted data values into numeric format
 cols_to_convert <- c(16:21, 23:29)
@@ -411,7 +429,7 @@ aggregate_mean <- aggregate_data |>
 kable(merged_domain_stats, caption = "Optimal Employment Perfomance by Domain")
 ```
 
-### Q2: Is the university that one goes to a significant factor to explain wages?
+### Question 2: Is the university that one goes to a significant factor to explain wages?
 
 To explore this question, let's first have a look at the summary of the salary data for economics graduates from different universities. Here, we use the data collected 30 months after graduation.
 
@@ -453,6 +471,7 @@ However, the university factor does not appear to have a significant impact on d
 ```{r}
 #| fig-width: 11
 #| fig-height: 5
+#| warning: false
 
 insertion_master_IDF <- insertion_master_panel |> 
   filter(Académie == "Paris")
@@ -482,6 +501,7 @@ ggplot(insertion_master_IDF, aes(x = Établissement, y = `Salaire brut annuel es
 ```{r}
 #| fig-width: 11
 #| fig-height: 5
+#| warning: false
 
 insertion_master_hors_IDF <- insertion_master_panel |> 
   filter(Académie != "Paris")
@@ -577,6 +597,10 @@ reg_result_table$Category <- ifelse(grepl("^Établissement", reg_result_table$te
                                                  ifelse(reg_result_table$term == "(Intercept)", "Intercept",
                                                         "RegionalSalary"))))
 
+reg_result_table$term <- str_remove(reg_result_table$term, "Établissement")
+reg_result_table$term <- str_remove(reg_result_table$term, "Domaine")
+reg_result_table$term <- str_replace(reg_result_table$term, "^situation", "Situation" )
+reg_result_table$term <- str_replace(reg_result_table$term, "`Salaire net mensuel médian régional`", "Salaire net mensuel médian régional" )
 
 reg_result_summary <- reg_result_table |>
   mutate(across(where(is.numeric), ~round(., 3))) |>
