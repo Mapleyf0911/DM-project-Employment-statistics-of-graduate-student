@@ -713,6 +713,13 @@ aggregate_femme <- aggregate_data |>
   group_by(Discipline) |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
+aggregate_femme |> ggplot(aes(x=`Taux de femmes`, y= Discipline)) + geom_point() 
+
+#scale_x_discrete(guide = guide_axis(angle = 90))
+```
+
+
+```{r}
 #'[Keeping the discipline with a higher than average % of women]
 aggregate_femme |>
   filter(`Taux de femmes` > average_femme) |>
@@ -746,6 +753,11 @@ aggregate_scholarship <- aggregate_data |>
 
 #'[Formatting]
 aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a scholarship per specialization") |> row_spec(c(13, 14, 15), background = "yellow")
+
+aggregate_scholarship |>
+  ggplot(aes(x= Discipline, y = `Taux de boursiers`)) +
+  geom_point() +
+  scale_x_discrete(guide = guide_axis(angle = 90))
 ```
 
 
