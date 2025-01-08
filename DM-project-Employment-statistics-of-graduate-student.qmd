@@ -384,7 +384,7 @@ To explore this question, let's first have a look at the summary of the salary d
 
 ```{r}
 reg_econ <- insertion_master_panel |> 
-  filter(`Code de la discipline` == "disc03" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))  |> 
+  filter(Domaine == "Droit, économie et gestion" & situation == "30 mois après le diplôme" & !is.na(`Salaire net médian des emplois à temps plein`))  |> 
   group_by(Établissement) |>
   summarise("Salaire moyen entre 2010 et 2021" = mean(`Salaire net médian des emplois à temps plein`)) |>
   arrange(desc(`Salaire moyen entre 2010 et 2021`))
@@ -400,22 +400,23 @@ merged_table <- top_5 |>
 
 merged_table$`Salaire moyen entre 2010 et 2021` <- sapply(merged_table$`Salaire moyen entre 2010 et 2021`, function(x) {
   if (is.na(x)) {
-    return(NA) # If the value is NA, keep it as NA
+    return(NA) 
   } else {
-    return(format(x, digits = 2, nsmall = 2))  # Keep two decimal places
+    return(format(x, digits = 2, nsmall = 2))  
   }
 })
 
 merged_table[is.na(merged_table)] <- "..."
 
-kable(merged_table, align = "c", caption = "Average Salaries of Economics Graduates 30 Months Post-Graduation")
+kable(merged_table, align = "c", caption = "Average Salaries of Law, Economics, and Management Graduates: 30 Months After Graduation")
 ```
 
-From the table above, we can easily find that there are significant differences in salary levels among economics graduates from different universities. Graduates from Paris-Panthéon-Assas got an average monthly salary of €2,920, while those from Perpignan - Via Domitia earned just over half of that amount. However, this is just a rough analysis; there are many other factors that influence the salary levels of graduates in the same field, such as the choice of employment location after graduation and the number of months since graduation. For most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we try to control the effect of other factors when we do the further analysis in the next part.
+From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.
 
-From the graphs below, we can notice an evident increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
+From the graphs below, we can see a clear increase in salaries between the two timeframes (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
 
-However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which corresponds to our findings before.
+However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which aligns with our earlier findings.
+
 
 ```{r}
 #| fig-width: 11
@@ -477,6 +478,7 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
     y = "Estimated Average Annual Salary (€)"
   )
 ```
+
 
 **Regression model**
 
@@ -557,39 +559,12 @@ reg_result_summary <- reg_result_table |>
   select(!Category) |>
   filter(Significance == "***") 
   
-kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)")
+kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", align = 'c')
 ```
 
-**MAYBE DELETE THE FOLLOWING PART OF Q2**
 
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
 
-```{r}
-academie_groups <- split(insertion_master_reg, insertion_master_reg$Académie)
-list_of_dfs <- lapply(academie_groups, as.data.frame)
-
-lapply(academie_groups, function(insertion_master_reg) {
-  sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
-    length(unique(var))
-  })
-})
-```
-
-```{r}
-valid_columns <- sapply(insertion_master_reg[, c("Établissement", "Domaine", "situation")], function(var) {
-    length(unique(var)) > 1
-  })
-
-```
-
-```{r}
-#'[Temporairement désactivé pour pouvoir créer le pdf]
-##regression_uni_by_group <- lapply(academie_groups, function(insertion_master_reg){
-##  regression_uni <- lm(`Salaire brut annuel estimé` ~ Établissement + Domaine + ##situation + `% de diplômés boursiers`, data = insertion_master_reg)
-##  return(regression_uni)
-##})
-
-```
 
 ### Question 3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
