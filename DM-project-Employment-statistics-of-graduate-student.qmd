@@ -1,5 +1,5 @@
 ---
-title: "DMC Project: Employment statistics of graduate students"
+title: "DM Project: Employment statistics of graduate students"
 author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
@@ -374,6 +374,8 @@ best_specializations_mean <- insertion_master_panel |>
     .groups = "drop"
   ) |>
   arrange(desc(MeanSalaire))
+
+kable(best_specializations_mean, caption = "Average Employment Perfomance by Specializations", align = 'c', digits = 2)
 ```
 
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
