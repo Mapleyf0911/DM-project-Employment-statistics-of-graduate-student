@@ -59,9 +59,9 @@ We do not have a unique research question, as it would not allow us to do enough
 
 ### Data import
 
-We aim to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program, university and "académie".
+The goal is to analyze the employability, situation of employment and salary of graduate students, depending on their graduate program, university and "académie".
 
-Here, we are using employment statistics from the professional insertion survey of Master students made by the Ministère de l'Enseignement Supérieur et de la Recherche. The survey focus on French graduate students who have completed their initial training ("formation initiale" in French) and have not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time points: 18 months and 30 months after their graduation.
+Here, we are using employment statistics from the professional insertion survey of graduate students made by the *Ministère de l'Enseignement Supérieur et de la Recherche*. The survey focus on French graduate students who have completed their initial training ("formation initiale" in French) and have not continued or resumed their studies in the two years following their graduation. The survey shows the employment status at two key time points: 18 months and 30 months after their graduation.
 
 #### Main data set {#main-data-set}
 
@@ -108,10 +108,9 @@ In this data set, each observation includes:
 
 #### Complementary data set
 
-For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).
-The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
+For comparison purposes, we found data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores). The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
 
-The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the Ministry of Armed Forces (France). This database can be used to describe salaried employment across all sectors.
+The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.
 
 From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.\
 We have:
@@ -222,11 +221,13 @@ selected_columns <- insertion_master_panel[, 13:29]
 is_non_numeric <- function(x) {
   as.character(x) == "ns" | as.character(x) == "nd" | as.character(x) == "fe" | as.character(x) == "." | is.na(x)
 }
+
 non_numeric_counts <- sapply(selected_columns, function(column){
   sum(is_non_numeric(column))
-})
+  })
   
-kable(data.frame(non_numeric_counts), caption = "Summary of Missing and Non-Numeric Data", align = 'c')
+kable(data.frame(non_numeric_counts), 
+      caption = "Summary of Missing and Non-Numeric Data", align = 'c')
 ```
 
 ```{r}
@@ -267,7 +268,6 @@ categories_data <- data.frame(
 kable(categories_data, caption = "Summary of Data set", align = 'c')
 ```
 
-
 ### Question 1: Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment?
 
 ```{r}
@@ -282,7 +282,7 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each field ("Domaine" column). 
+For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each field ("Domaine" column).
 
 In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the lowest, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
 
@@ -431,7 +431,6 @@ From the graphs below, we can see a clear increase in salaries between the two t
 
 However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which aligns with our earlier findings.\
 
-
 ```{r}
 #| fig-width: 11
 #| fig-height: 5
@@ -493,7 +492,6 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
   )
 ```
 
-
 #### Regression model
 
 To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
@@ -504,16 +502,15 @@ $$
 
 Where:
 
-- $Y_i$: Estimated annual salaries
+-   $Y_i$: Estimated annual salaries
 
-- $D_{University_j}$: Dummy variables for universities
+-   $D_{University_j}$: Dummy variables for universities
 
-- $D_{Field_k}$: Dummy variables for fields
+-   $D_{Field_k}$: Dummy variables for fields
 
-- $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation)
+-   $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation)
 
-- $RegionalSalary$: Regional median net monthly salary.
-
+-   $RegionalSalary$: Regional median net monthly salary.
 
 ```{r}
 # Data Preparation for regression
@@ -589,9 +586,7 @@ reg_result_summary <- reg_result_table |>
 kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", align = 'c')
 ```
 
-
 Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
-
 
 ### Question 3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
@@ -697,11 +692,15 @@ aggregate_femme <- aggregate_data |>
 
 aggregate_femme |> ggplot(aes(x=`Taux de femmes`, y= Discipline)) +
   geom_point() +
-  geom_vline(xintercept = average_femme, color = "blue")
-
-#scale_x_discrete(guide = guide_axis(angle = 90))
+  geom_vline(xintercept = average_femme, color = "blue") +
+  annotate("text", 
+           x = 57, y = 15, 
+           label = "average % of women", 
+           angle = 90,
+           size = 3
+           )
+  
 ```
-
 
 ```{r}
 #'[Keeping the discipline with a higher than average % of women]
@@ -715,9 +714,7 @@ aggregate_femme |>
 
 ```
 
-The z-score is the number of standard deviations between the observed value and the mean.
-We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5).
-The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of \~1, or a 0.5σ difference from the first two specializations.\
+The z-score is the number of standard deviations between the observed value and the mean. We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5). The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of \~1, or a 0.5σ difference from the first two specializations.\
 
 Now, let's focus on the percentage of scholarship students in our survey.
 
@@ -727,7 +724,7 @@ average_scholarship <- round(mean(insertion_master_panel$`% de diplômés boursi
 stdev_scholarship <- round(sd(insertion_master_panel$`% de diplômés boursiers`, na.rm = TRUE),2)
 ```
 
-There is an average `r paste(average_scholarship)` % of scholarship students in our survey, with a standard deviation of `r paste(stdev_scholarship)`. By computing the percentage of scholarship students per field, we obtain: 
+There is an average `r paste(average_scholarship)` % of scholarship students in our survey, with a standard deviation of `r paste(stdev_scholarship)`. By computing the percentage of scholarship students per field, we obtain:
 
 ```{r}
 #'[Creating a data frame]
@@ -741,10 +738,7 @@ aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a 
   row_spec(c(13, 14, 15), background = "yellow")
 ```
 
-
 ## Conclusion
-
-
 
 ## Appendix
 
