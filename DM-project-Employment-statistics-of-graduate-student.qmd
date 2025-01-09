@@ -306,7 +306,11 @@ merged_domain_stats <- max_salary_domain |>
   left_join(max_insertion_rate_domain, by = "Domaine") |>
   left_join(max_stable_employment_domain, by = "Domaine")
 
-kable(merged_domain_stats, caption = "Optimal Employment Perfomance by Domain", align = 'c')
+kable(merged_domain_stats, 
+      caption = "Optimal Employment Perfomance by Domain",
+      align = 'c', 
+      col.names = c("Field", "Max annual net wage (€)",
+                    "Max insertion rate (%)", "Max stable employment rate (%)") )
 ```
 
 Further, we looked at the average performance of employment in each domain/specialization. We could get the similar conclusion. Graduates from **Sciences, technologies et santé** and **Droit, économie et gestion** fields stand out in terms of average salaries, earning €31,468 and €31,350 respectively, ranking first and second. In contrast, graduates from **Lettres, langues, arts** have the lowest average salary.
@@ -326,7 +330,11 @@ best_domain_mean <- insertion_master_panel |>
   ) |>
   arrange(desc(MeanSalaire))
 
-kable(best_domain_mean, caption = "Average Employment Perfomance by Domain", align = 'c', digits = 2)
+kable(best_domain_mean, 
+      caption = "Average Employment Perfomance by Domain", 
+      align = 'c', digits = 2,
+      col.names = c("Field", "Mean annual net wage (€)",
+                    "Mean insertion rate (%)", "Mean stable employment rate (%)"))
 
 best_domain_long <- best_domain_mean |>
   pivot_longer(
@@ -375,7 +383,11 @@ best_specializations_mean <- insertion_master_panel |>
   ) |>
   arrange(desc(MeanSalaire))
 
-kable(best_specializations_mean, caption = "Average Employment Perfomance by Specializations", align = 'c', digits = 2)
+kable(best_specializations_mean, 
+      caption = "Average Employment Perfomance by Specializations", 
+      align = 'c', digits = 2,
+      col.names = c("Specialization", "Field", "Mean net annual wage (€)",
+                    "Mean insertion rate (%) ", "Mean stable employment rate (%)"))
 ```
 
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
@@ -408,7 +420,9 @@ merged_table$`Salaire moyen entre 2010 et 2021` <- sapply(merged_table$`Salaire 
 
 merged_table[is.na(merged_table)] <- "..."
 
-kable(merged_table, align = "c", caption = "Average Salaries of Law, Economics, and Management Graduates: 30 Months After Graduation")
+kable(merged_table, align = "c", 
+      caption = "Average Salaries of Law, Economics, and Management Graduates: 30 Months After Graduation",
+      col.names = c("University", "Mean monthly net wage between 2010 and 2020"))
 ```
 
 From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.
@@ -480,13 +494,26 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
 ```
 
 
-**Regression model**
+#### Regression model
 
 To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Field_k} + \sum_{l=1}^{L-1} \delta_l D_{Situation_l} + \phi \cdot RegionalSalary + \epsilon_i
-$$ Where:<br> - $Y_i$: Estimated annual salaries.<br> - $D_{University_j}$: Dummy variables for universities.<br> - $D_{Field_k}$: Dummy variables for fields.<br> - $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation).<br> - $RegionalSalary$: Regional median net monthly salary.<br>
+$$
+
+Where:
+
+- $Y_i$: Estimated annual salaries
+
+- $D_{University_j}$: Dummy variables for universities
+
+- $D_{Field_k}$: Dummy variables for fields
+
+- $D_{Situation_l}$: Dummy variables for situation (18 or 30 months since graduation)
+
+- $RegionalSalary$: Regional median net monthly salary.
+
 
 ```{r}
 # Data Preparation for regression
@@ -515,7 +542,7 @@ insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université
 
 We need to set a reference group for each categorical variable when creating dummy variables. For the variable "Établissement," we select "Toutes universités et établissements assimilés" as the reference group. This choice allows us to compare the performance of individual universities against the average performance of all universities in our dataset. For the variable "Domaine," we choose "Masters enseignement" as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from "Masters enseignement" and those from the other four fields. And for the variable "situation," which has only two possible values, either value can serve as the reference group.
 
-**Interpretation of Regression Results**
+#### Interpretation of Regression Results
 
 Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with response Variable ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.
 
