@@ -284,7 +284,7 @@ best_specializations_max <- insertion_master_panel |>
 
 For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each field ("Domaine" column).
 
-In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the lowest, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
+In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the lowest, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages are the least paid on average, with a salary of only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -344,7 +344,8 @@ best_domain_long <- best_domain_mean |>
   )
 
 best_domain_long <- best_domain_long |>
-  mutate(Metric = factor(Metric, levels = c("MeanSalaire", "MeanInsertionRate", "MeanStableEmployment")))
+  mutate(Metric = factor(Metric, levels = c("MeanSalaire", "MeanInsertionRate", 
+                                            "MeanStableEmployment")))
 ```
 
 ```{r}
@@ -739,6 +740,10 @@ aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a 
 ```
 
 ## Conclusion
+
+  We have been able to make significant observations with the various tests performed on both data sets. They are nonetheless insufficient to draw actual conclusions on the situation of graduate students in France. 
+The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service, which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).  
+
 
 ## Appendix
 
