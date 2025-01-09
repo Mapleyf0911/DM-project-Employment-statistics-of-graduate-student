@@ -686,7 +686,7 @@ average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
 stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
 ```
 
-In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)`. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain:
+In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)` percentage points. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain:
 
 ```{r}
 #'[Creating a data frame with the mean % of women per discipline over the 11 years.] 
@@ -695,7 +695,9 @@ aggregate_femme <- aggregate_data |>
   group_by(Discipline) |>
   summarise(`Taux de femmes` = mean(`% femmes`))
 
-aggregate_femme |> ggplot(aes(x=`Taux de femmes`, y= Discipline)) + geom_point() 
+aggregate_femme |> ggplot(aes(x=`Taux de femmes`, y= Discipline)) +
+  geom_point() +
+  geom_vline(xintercept = average_femme, color = "blue")
 
 #scale_x_discrete(guide = guide_axis(angle = 90))
 ```
@@ -735,11 +737,14 @@ aggregate_scholarship <- aggregate_data |>
   summarise(`Taux de boursiers` = mean(`% de diplômés boursiers`))
 
 #'[Formatting]
-aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a scholarship per specialization") |> row_spec(c(13, 14, 15), background = "yellow")
+aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a scholarship per specialization") |>
+  row_spec(c(13, 14, 15), background = "yellow")
 ```
 
 
 ## Conclusion
+
+
 
 ## Appendix
 
