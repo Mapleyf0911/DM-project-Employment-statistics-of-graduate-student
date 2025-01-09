@@ -108,14 +108,12 @@ In this data set, each observation includes:
 
 #### Complementary data set
 
-For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).<br>
-
-The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.
+For comparison purposes, we found wage data in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).
+The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
 
 The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the Ministry of Armed Forces (France). This database can be used to describe salaried employment across all sectors.
 
-From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.
-
+From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.\
 We have:
 
 -   the different deciles of net wages at the Île-de-France and national levels;
@@ -284,7 +282,9 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each fields ("Domaine" column). In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the worst, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
+For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each field ("Domaine" column). 
+
+In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the lowest, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages fields still performed the worst, with a salary of only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -425,11 +425,11 @@ kable(merged_table, align = "c",
       col.names = c("University", "Mean monthly net wage between 2010 and 2020"))
 ```
 
-From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.
+From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.\
 
 From the graphs below, we can see a clear increase in salaries between the two timeframes (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
 
-However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which aligns with our earlier findings.
+However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which aligns with our earlier findings.\
 
 
 ```{r}
