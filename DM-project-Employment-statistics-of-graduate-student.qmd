@@ -619,8 +619,11 @@ insertion_master_panel |>
   filter(!is.na(`% emplois extérieurs à la région de l’université`)) |>
   group_by(Académie,Domaine) |>
   summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
-  slice(which.max(`%_ext`)) |> arrange(desc(`%_ext`)) |>
-  knitr::kable(digits = 3, align = "c", caption = "Specializations with the highest rate of graduates working outside of their region of graduation")
+  slice(which.max(`%_ext`)) |>
+  arrange(desc(`%_ext`)) |>
+  knitr::kable(digits = 3, align = "c",
+               caption = "Specializations with the highest rate of graduates working outside of their region of graduation",
+               col.names = c("Académie", "Field", "% working outside their region of graduation"))
   
 ```
 
@@ -632,7 +635,9 @@ insertion_master_panel |>
   summarise(`%_ext` = mean(`% emplois extérieurs à la région de l’université`))|>
   slice(which.min(`%_ext`)) |>
     arrange(desc(`%_ext`)) |>
-  knitr::kable(digits = 3, align = "c", caption = "Specializations with the lowest rate of graduates working outside of their region of graduation")
+  knitr::kable(digits = 3, align = "c",
+               caption = "Specializations with the lowest rate of graduates working outside of their region of graduation",
+               col.names = c("Académie", "Field", "% working outside their region of graduation"))
  
 ```
 
@@ -674,7 +679,8 @@ aggregate_femme |>
   arrange(desc(`Taux de femmes`) ) |>
   mutate(`z-score` = round((`Taux de femmes` - average_femme)/stdev_femme,4)) |>
   knitr::kable(digits = 3, align = "c",
-               caption = " Specializations with a higher than average proportion of women")
+               caption = " Specializations with a higher than average proportion of women",
+               col.names = c("Specialization", "% of women", "z-score"))
 
 ```
 
@@ -701,11 +707,6 @@ aggregate_scholarship <- aggregate_data |>
 
 #'[Formatting]
 aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a scholarship per specialization") |> row_spec(c(13, 14, 15), background = "yellow")
-
-aggregate_scholarship |>
-  ggplot(aes(x= Discipline, y = `Taux de boursiers`)) +
-  geom_point() +
-  scale_x_discrete(guide = guide_axis(angle = 90))
 ```
 
 
