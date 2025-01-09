@@ -373,7 +373,9 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   scale_x_discrete(limits = c("Sciences, technologies et santé", "Droit, économie et gestion", "Masters enseignement", "Sciences humaines et sociales", "Lettres, langues, arts")) 
 ```
 
+When we further analyzed the average performance of employment at the specialization level, we found that the top 3 specializations all belong to the Sciences, Technologies, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. These fields are generally regarded as lower-paying. 
 
+However, an interesting finding is that although the employment performance of Education graduates ranks in the middle among the five fields in our study, a specific specialization within Education, Primary Education, appears to have relatively low pay, with an average net annual wage of only €25,771.
 
 ```{r}
 best_specializations_mean <- insertion_master_panel |>
@@ -386,8 +388,8 @@ best_specializations_mean <- insertion_master_panel |>
   ) |>
   arrange(desc(MeanSalaire))
 
-top_5 <- best_specializations_mean[1:5, ]
-bottom_5 <- best_specializations_mean[(nrow(best_specializations_mean)-4):nrow(best_specializations_mean),]
+top_5 <- best_specializations_mean[1:3, ]
+bottom_5 <- best_specializations_mean[(nrow(best_specializations_mean)-2):nrow(best_specializations_mean),]
 
 top_5 <- top_5 |>
   bind_rows(data.frame(`Discipline` = "...", `Domaine` = "..."))
@@ -397,12 +399,10 @@ merged_table <- top_5 |>
   mutate(MeanSalaire = round(MeanSalaire, 2),
          MeanInsertionRate = round(MeanInsertionRate, 2),
          MeanStableEmployment = round(MeanStableEmployment, 2)) |>
-  mutate(MeanSalaire = as.character(MeanSalaire),
-         MeanInsertionRate = as.character(MeanInsertionRate),
-         MeanStableEmployment = as.character(MeanStableEmployment)) |>
-  mutate(MeanSalaire = if_else(MeanSalaire == "NA", "...", MeanSalaire),
-         MeanInsertionRate = if_else(MeanInsertionRate == "NA", "...", MeanInsertionRate),
-         MeanStableEmployment = if_else(MeanStableEmployment == "NA", "...", MeanStableEmployment))
+  mutate(across(c(MeanSalaire, MeanInsertionRate, MeanStableEmployment), as.character)) |>
+  mutate(MeanSalaire = if_else(is.na(MeanSalaire), "...", MeanSalaire),
+         MeanInsertionRate = if_else(is.na(MeanInsertionRate), "...", MeanInsertionRate),
+         MeanStableEmployment = if_else(is.na(MeanStableEmployment), "...", MeanStableEmployment))
 
 
 kable(merged_table, 
@@ -413,10 +413,9 @@ kable(merged_table,
 ```
 
 
-
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
 
-To explore this question, let's first have a look at the summary of the salary data for economics graduates from different universities. Here, we use the data collected 30 months after graduation.
+To explore this question,  we first examine the summary of salary data for graduates from different universities within a specific field. Here, we use data from 30 months after graduation.
 
 ```{r}
 reg_econ <- insertion_master_panel |> 
@@ -448,16 +447,11 @@ kable(merged_table, align = "c",
       caption = "Average Salaries of Law, Economics, and Management Graduates: 30 Months After Graduation",
       col.names = c("University", "Mean monthly net wage between 2010 and 2020"))
 ```
-
 From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.\
-
-From the graphs below, we can see a clear increase in salaries between the two timeframes (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
-
-However, the university factor does not appear to have a significant impact on determining graduate salary levels. In contrast, from both sets of graphs, we can find that graduates from the Sciences, technologies et santé and Droit, économie et gestion fields consistently achieve higher average salaries. Meanwhile, graduates from Sciences humaines et sociales and Lettres, langues, arts fields consistently have lower average salaries, which aligns with our earlier findings.\
 
 ```{r}
 #| fig-width: 11
-#| fig-height: 5
+#| fig-height: 4.2
 #| warning: false
 
 insertion_master_IDF <- insertion_master_panel |> 
@@ -487,7 +481,7 @@ ggplot(insertion_master_IDF, aes(x = Établissement, y = `Salaire brut annuel es
 
 ```{r}
 #| fig-width: 11
-#| fig-height: 5
+#| fig-height: 4.2
 #| warning: false
 
 insertion_master_hors_IDF <- insertion_master_panel |> 
@@ -515,6 +509,10 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
     y = "Estimated Average Annual Salary (€)"
   )
 ```
+
+From the graphs above, we can see a clear increase in salaries between the two timeframes (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
+
+However, the university factor does not appear to have a significant impact on determining graduate salary levels——a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we can find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields consistently have lower average salaries, which aligns with our earlier findings.
 
 #### Regression model
 
@@ -561,13 +559,14 @@ insertion_master_reg$Académie <-
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
 
-We need to set a reference group for each categorical variable when creating dummy variables. For the variable "Établissement," we select "Toutes universités et établissements assimilés" as the reference group. This choice allows us to compare the performance of individual universities against the average performance of all universities in our dataset. For the variable "Domaine," we choose "Masters enseignement" as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from "Masters enseignement" and those from the other four fields. And for the variable "situation," which has only two possible values, either value can serve as the reference group.
+We need to set a reference group for each categorical variable when creating dummy variables. For the variable $D_{University_j}$, we select "Toutes universités et établissements assimilés" as the reference group. Although there may be some overlap between the variables for a specific university and those for all the universities, this reference group is still the ideal choice, as it provides more economic insights and allows us to compare the performance of individual universities against the average performance of all universities in our data set. 
+For the variable $D_{Field_k}$, we choose Education as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from Education field and those from the other four fields. And for the variable $D_{Situation_l}$, which has only two possible values, either value can serve as the reference group.
 
 #### Interpretation of Regression Results
 
-Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with response Variable ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.
+Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with Response Variable *Estimated annual salaries* ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.\
 
-In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation\* ($D_{Situation}$), and regional salary levels ($\text{RegionalSalary}$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
+In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation ($D_{Situation}$), and regional salary levels ($RegionalSalary$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
 
 ```{r}
 insertion_master_reg$Établissement <- factor(insertion_master_reg$Établissement)
@@ -609,8 +608,12 @@ reg_result_summary <- reg_result_table |>
   
 kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", align = 'c')
 ```
+While we can see a more precise role of university in determining graduate pay levels if we regress by "Académie" subgroups, we think that our current analyses are already illustrative to some extent. 
 
-Here, to control the effect of regional salary on the annual salary graduates obtained, we decide to do the regression by different groups of "Académie". However, since in some Académies, there is only one university, it will be impossible to run regression model if we do not remove those Académies. Fortunately, the number of these kind of Académies is small. Removing them out of our dataset would not have a huge impact on our final result.
+Contrary to many academic belief that schools have a significant impact on graduate pay, our results show that the role of schools is not particularly prominent. This may be related to the unique French higher education system, particularly the public university system. In this system, with the exception of some elite institutions (e.g., Dauphine), most institutions are relatively similar in terms of educational standards and therefore do not have a decisive impact on the employment performance of their graduates.
+
+Instead, other factors (e.g. choice of specialization and region of employment) seem to have a greater impact on graduate salaries.
+
 
 ### Question 3: How do the wages of these graduates compare to the average national/regional salaries? How do they compare to the average of their respective fields?
 
