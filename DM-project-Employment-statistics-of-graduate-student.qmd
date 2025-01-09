@@ -49,7 +49,7 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating? It will be necessary to separate the programs where we have 18-month observations, those with 30-month observations, and those with both, and isolate this last category.
 
--   Do some specializations require to leave the region of the "académie" where the master's degree was done? It could show the concentration of certain industries at national level.
+-   Do some fields of study require graduates to leave the region of the "académie" where they completed their master's degree? It could show the concentration of certain industries at national level.
 
 -   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
 
@@ -653,9 +653,9 @@ mean_insertion <- round(mean(insertion_master_panel$`Taux d’insertion`, na.rm 
 
 Overall, the average insertion rate is `r paste(mean_insertion)` %. The moment of collection does not seem to be relevant.
 
-### Question 5: Do some specializations require to leave the region of the “académie” where the master’s degree was done?
+### Question 5: Do some fields of study require graduates to leave the region of the "académie" where they completed their master's degree?
 
-We try to look at the percentage of graduates working outside of their region of graduation for all "académies", depending on the specialization. The two tables below show the specializations with the highest and lowest rates of graduates leaving for each "académie".
+We try to look at the percentage of graduates working outside of their region of graduation for all "académies", depending on the field. The two tables below show the fields with the highest and lowest rates of graduates leaving for each "académie".
 
 ```{r}
 #| warning: false
@@ -687,7 +687,7 @@ insertion_master_panel |>
   slice(which.max(`%_ext`)) |>
   arrange(desc(`%_ext`)) |>
   knitr::kable(digits = 3, align = "c",
-               caption = "Specializations with the highest rate of graduates working outside of their region of graduation",
+               caption = "Fields with the highest rate of graduates working outside of their region of graduation",
                col.names = c("Académie", "Field", "% working outside their region of graduation"))
   
 ```
@@ -701,7 +701,7 @@ insertion_master_panel |>
   slice(which.min(`%_ext`)) |>
     arrange(desc(`%_ext`)) |>
   knitr::kable(digits = 3, align = "c",
-               caption = "Specializations with the lowest rate of graduates working outside of their region of graduation",
+               caption = "Fields with the lowest rate of graduates working outside of their region of graduation",
                col.names = c("Académie", "Field", "% working outside their region of graduation"))
  
 ```
