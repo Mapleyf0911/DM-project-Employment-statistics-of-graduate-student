@@ -10,8 +10,8 @@ format:
     tbl-cap-location: top
     geometry:
       - top=1in
-      - left=1in
-      - right=1in
+      - left=0.8in
+      - right=0.8in
       - bottom=1in
 mainfront: Times New Roman
 execute: 
@@ -240,6 +240,7 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 And to facilitate our future analysis, we also convert some character-formatted data values into numeric format.
 
 ```{r}
+#| warning: false
 cols_to_convert <- c(16:21, 23:29)
 insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, cols_to_convert], function(x){
   if (is.character(x)){
@@ -589,6 +590,13 @@ reg_result_table$Significance <- symnum(reg_result_table$`p.value`,
 ```
 
 ```{r}
+reg_statistics <- glance(regression_uni) |>
+  mutate(across(where(is.numeric), ~round(., 2)))|>
+  select(1:6, 12)
+kable(reg_statistics, caption = "Key Statistics of Regression Model", align = 'c')
+```
+
+```{r}
 reg_result_table$Category <- ifelse(grepl("^Établissement", reg_result_table$term), "University",
                                    ifelse(grepl("^Domaine", reg_result_table$term), "Field",
                                           ifelse(grepl("^situation", reg_result_table$term), "Situation",
@@ -608,6 +616,10 @@ reg_result_summary <- reg_result_table |>
   
 kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", align = 'c')
 ```
+
+
+
+
 While we can see a more precise role of university in determining graduate pay levels if we regress by "Académie" subgroups, we think that our current analyses are already illustrative to some extent. 
 
 Contrary to many academic belief that schools have a significant impact on graduate pay, our results show that the role of schools is not particularly prominent. This may be related to the unique French higher education system, particularly the public university system. In this system, with the exception of some elite institutions (e.g., Dauphine), most institutions are relatively similar in terms of educational standards and therefore do not have a decisive impact on the employment performance of their graduates.
@@ -646,6 +658,8 @@ Overall, the average insertion rate is `r paste(mean_insertion)` %. The moment o
 We try to look at the percentage of graduates working outside of their region of graduation for all "académies", depending on the specialization. The two tables below show the specializations with the highest and lowest rates of graduates leaving for each "académie".
 
 ```{r}
+#| warning: false
+
 ## The columns '% emplois extérieurs à la région de l'université', '% femmes' and '% de diplômés boursiers' have to be converted into numerical values for Q5 and Q6. 
 aggregate_data[, c(22, 26, 27)] <- sapply(aggregate_data[, c(22, 26, 27)], function(x){
   if (is.character(x)){
@@ -771,10 +785,19 @@ aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a 
 The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service, which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).
 The fact that all data was collected among individuals at the very beginning of their professional life is another potential critic. People that have just graduated will be in entry-level positions and are unlikely to be liberal professionals. If the same survey were to be performed five to ten years after graduation, the gap in wages between certain specializations would be wider, as some people would have opened their own law firm or medical practice. 
 
+\newpage
 
 ## Appendix
 
 ```{r}
+# | page-layout: landscape
 #Regression result of Question 2
-summary(regression_uni)
+
+
+reg_result_whole <- reg_result_table |>
+  mutate(across(where(is.numeric), ~round(., 3))) |>
+  mutate(across(c(estimate, std.error, statistic), ~round(., 2))) |>
+  select(!Category)
+
+kable(reg_result_whole, caption = "Regression Coefficients Table", align = 'c')
 ```
