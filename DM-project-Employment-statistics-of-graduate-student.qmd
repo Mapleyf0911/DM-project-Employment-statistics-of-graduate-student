@@ -610,12 +610,14 @@ insertion_master_panel |>
   group_by(situation) |>
   summarize(`Mean insertion rate` = mean(`Taux d’insertion`, na.rm = TRUE),
             `σ insertion rate` = sd(`Taux d’insertion`, na.rm = TRUE) ) |>
-  knitr::kable(digits = 3, align = "c")
+  knitr::kable(digits = 3, align = "c",
+               col.names = c("Situation", "Mean insertion rate (%)",
+                             "Standard deviation"))
 
 mean_insertion <- round(mean(insertion_master_panel$`Taux d’insertion`, na.rm = TRUE), 2)
 ```
 
-Overall, the average insertion rate is `r paste(mean_insertion)` % . The moment of collection does not seem to be relevant.
+Overall, the average insertion rate is `r paste(mean_insertion)` %. The moment of collection does not seem to be relevant.
 
 ### Question 5: Do some specializations require to leave the region of the “académie” where the master’s degree was done?
 
