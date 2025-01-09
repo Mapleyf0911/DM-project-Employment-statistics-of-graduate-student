@@ -227,7 +227,7 @@ non_numeric_counts <- sapply(selected_columns, function(column){
   })
   
 kable(data.frame(non_numeric_counts), 
-      caption = "Summary of Missing and Non-Numeric Data", align = 'c')
+      caption = "Summary of Missing and Non-Numeric Data", align = 'c', col.names = c("", "Counts"))
 ```
 
 ```{r}
@@ -282,9 +282,9 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance in each field ("Domaine" column).
+For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance across different fields ('Domaines').
 
-In terms of insertion rate and stable employment rate, the employment performance of graduates from arts, literature and languages fields are the lowest, with both rates below 100%, while all other disciplines achieved a 100% employment rate. From the perspective of salary levels, graduates from Law, Economics and Management fields as well as Science, Technology, and Health fields get the highest pay, reaching €49,100. Graduates from arts, literature, and languages are the least paid on average, with a salary of only €34,300.
+In terms of the insertion rate and stable employment rate, graduates from Arts, Languages, and Literature fields have the lowest employment performance, with both rates below 100%, while all other disciplines achieved a 100% employment rate. Regarding salary levels, graduates in Law, Economics and Management, as well as Science, Technology, and Health, earn the highest pay, reaching €49,100. Graduates from Arts, Languages, and Literature earn the lowest salary at only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -313,11 +313,11 @@ kable(merged_domain_stats,
                     "Max insertion rate (%)", "Max stable employment rate (%)") )
 ```
 
-Further, we looked at the average performance of employment in each domain/specialization. We could get the similar conclusion. Graduates from **Sciences, technologies et santé** and **Droit, économie et gestion** fields stand out in terms of average salaries, earning €31,468 and €31,350 respectively, ranking first and second. In contrast, graduates from **Lettres, langues, arts** have the lowest average salary.
+Further, we looked at the average performance of employment in each field/specialization and reached a similar conclusion. Graduates from Sciences, Technologies, and Health and Law, Economics, and Management fields stand out in terms of average salaries, earning €31,468 and €31,350 respectively, ranking first and second. In contrast, graduates from Arts, Languages, and Literature have the lowest average salary.
 
-Regarding the insertion rate, three fields exceed 90%: **Sciences, technologies et santé**, **Droit, économie et gestion**, and **Masters enseignement**. Among them, **Masters enseignement** excels not only in employment rate but also in stable employment rate, outperforming all other fields in the latter.
+Regarding the insertion rate, three fields exceed 90%: Sciences, Technologies, and Health, Law, Economics, and Management, and Education. Among them, Education excels not only in employment rate but also in the stable employment rate, outperforming all other fields in the latter.
 
-Another interesting fact we found is that the average salary for **Masters enseignement** graduates is not as high as in certain other fields, their good performance in both successful employment and employment stability makes it a compelling choice for prospective students.
+Another interesting finding is that while the average salary for Education graduates is not as high as in certain other fields, their good performance in both successful employment and employment stability makes it a compelling choice for prospective students.
 
 ```{r}
 best_domain_mean <- insertion_master_panel |>
@@ -373,6 +373,8 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   scale_x_discrete(limits = c("Sciences, technologies et santé", "Droit, économie et gestion", "Masters enseignement", "Sciences humaines et sociales", "Lettres, langues, arts")) 
 ```
 
+
+
 ```{r}
 best_specializations_mean <- insertion_master_panel |>
   group_by(Discipline, Domaine) |>
@@ -384,12 +386,33 @@ best_specializations_mean <- insertion_master_panel |>
   ) |>
   arrange(desc(MeanSalaire))
 
-kable(best_specializations_mean, 
+top_5 <- best_specializations_mean[1:5, ]
+bottom_5 <- best_specializations_mean[(nrow(best_specializations_mean)-4):nrow(best_specializations_mean),]
+
+top_5 <- top_5 |>
+  bind_rows(data.frame(`Discipline` = "...", `Domaine` = "..."))
+
+merged_table <- top_5 |>
+  bind_rows(bottom_5) |>
+  mutate(MeanSalaire = round(MeanSalaire, 2),
+         MeanInsertionRate = round(MeanInsertionRate, 2),
+         MeanStableEmployment = round(MeanStableEmployment, 2)) |>
+  mutate(MeanSalaire = as.character(MeanSalaire),
+         MeanInsertionRate = as.character(MeanInsertionRate),
+         MeanStableEmployment = as.character(MeanStableEmployment)) |>
+  mutate(MeanSalaire = if_else(MeanSalaire == "NA", "...", MeanSalaire),
+         MeanInsertionRate = if_else(MeanInsertionRate == "NA", "...", MeanInsertionRate),
+         MeanStableEmployment = if_else(MeanStableEmployment == "NA", "...", MeanStableEmployment))
+
+
+kable(merged_table, 
       caption = "Average Employment Perfomance by Specializations", 
-      align = 'c', digits = 2,
+      align = 'c',
       col.names = c("Specialization", "Field", "Mean net annual wage (€)",
                     "Mean insertion rate (%) ", "Mean stable employment rate (%)"))
 ```
+
+
 
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
 
