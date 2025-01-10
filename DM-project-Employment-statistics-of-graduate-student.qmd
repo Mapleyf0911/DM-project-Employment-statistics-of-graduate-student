@@ -372,7 +372,10 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   ) +
   scale_fill_brewer(palette = "Set2") +
   scale_x_discrete(limits = c("Sciences, technologies et santé", "Droit, économie et gestion", "Masters enseignement", "Sciences humaines et sociales", "Lettres, langues, arts")) 
+
 ```
+
+
 
 Analyzing the average performance of employment at the specialization level, we find that the top 3 specializations all belong to the Science, Technology, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. These fields are generally regarded as lower-paying. 
 
