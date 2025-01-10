@@ -4,9 +4,6 @@ author: "Lou Delattre and Yufeng Jiang"
 format: 
   html: default 
   wordcount-pdf:
-    indent: true
-    first-line-indent:
-      size: 1.5em
     tbl-cap-location: top
     geometry:
       - top=1in
@@ -69,7 +66,7 @@ Here, we are using employment statistics from the professional insertion survey 
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
 \
-Our main data set is about the professional outcomes of graduate students from various French universities, 18 months and 30 months after graduation, between 2010 and 2021. The data was collected between December 2012 and and December 2022. 
+Our main data set is about the professional outcomes of graduate students from various french universities, 18 months and 30 months after graduation, between 2010 and 2021. The data was collected between December 2012 and and December 2022. 
 
 ```{r}
 nrow_insertion_master <- nrow(insertion_master)
@@ -99,7 +96,7 @@ Each observation^[With the exception of aggregate observations, that will be iso
 
 -   The "insertion" rate (employment rate that does not take into account inactives in the reference population);<br>
 
--     The stable employment rate;<br> 
+-   The stable employment rate;<br> 
 
 -   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
 
@@ -115,7 +112,7 @@ Each observation^[With the exception of aggregate observations, that will be iso
 \
 For comparison purposes, we also use data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).
 
-The database Tous Salariés has all the information about employees as they use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.\
+The database Tous Salariés has all the information about employees as they use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study. The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.\
 
 From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and remove the textual explanatory information before importing the needed table into R.\
 
@@ -192,7 +189,7 @@ insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
-Let's focus now on the observations, as not some of them may not be exploitable. 
+Let's focus now on the observations, as some of them may not be exploitable. 
 The "Remarque" column contains five possible values:
 
 1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables. \[Inadequate Size of Graduates Population\]
@@ -292,7 +289,7 @@ We try to find the fields/specializations with the highest employment rate and s
 
 In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest maximum rates, with both maximum rates below 100% (but still over 90%), while all other fields achieved a maximum employment rate of 100%. 
 
-Regarding salary levels, the specialization Law, Economics and Management, as well as Science, Technology, and Health, has the highest maximum wage, reaching €49,100. Arts, Languages, and Literature has the lowest maximum salary at only €34,300.
+Regarding salary levels, the fields Law, Economics and Management, as well as Science, Technology, and Health, has the highest maximum wage, reaching €49,100. Arts, Languages, and Literature has the lowest maximum salary at only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -426,7 +423,7 @@ kable(merged_table,
 
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
 
-To answer this question, we first examine the summary of salary data for graduates from different universities within a specific field. Here, we use data from 30 months after graduation.
+To answer this question, we first examine the summary of salary data for graduates from different universities within a specific field: Law, Economics, and Management. Here, we use data from 30 months after graduation.
 
 ```{r}
 reg_econ <- insertion_master_panel |> 
@@ -521,7 +518,7 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
   )
 ```
 \
-From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.\
+From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges 30 months after graduation.\
 
 However, the university factor does not appear to have a significant impact on determining graduate salary levels — a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields always have lower average salaries, which aligns with our earlier findings.
 
@@ -570,12 +567,11 @@ insertion_master_reg$Académie <-
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
 
-We need to set a reference group for each categorical variable when creating dummy variables. For the variable $D_{University_j}$, we select "Toutes universités et établissements assimilés" as the reference group. Although there may be some overlap between the variables for a specific university and those for all the universities, this reference group is still the ideal choice, as it provides more economic insight and allows us to compare the performance of individual universities against the average performance of all universities in our data set. 
-For the variable $D_{Field_k}$, we choose Education as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from Education field and those from the other four fields. And for the variable $D_{Situation_l}$, which has only two possible values, either value can serve as the reference group.
+We need to set a reference group for each categorical variable when creating dummy variables. For the variable $D_{University_j}$, we select "Toutes universités et établissements assimilés" as the reference group. Although there may be some overlap between the variables for a specific university and those for all the universities, this reference group is still the ideal choice, as it provides more economic insight and allows us to compare the performance of individual universities against the average performance of all universities in our data set. For the variable $D_{Field_k}$, we choose "Education" as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from Education field and those from the other four fields. And for the variable $D_{Situation_l}$, which has only two possible values, either value can serve as the reference group.
 
 #### Interpretation of Regression Results
 
-Based on the regression results (as detailed in Appendix 1), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with Response Variable *Estimated annual salaries* ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.\
+Based on the regression results (as detailed in Appendix), the set of dummy variables for *university* ($D_{University}$) demonstrates weak explanatory power for graduates' salary levels ($Y_i$). Only a small number of universities exhibit statistically significant positive or negative correlation with Response Variable *Estimated annual salaries* ($Y_i$) at the 1% significance level. However, for the majority of universities, the coefficients are not statistically significant, suggesting that the single factor *university* is not sufficient to explain the salary disparities among graduates.\
 
 In contrast, other variables, such as field of study ($D_{Field}$), the number of months since graduation ($D_{Situation}$), and regional salary levels ($RegionalSalary$), display stronger statistical significance and higher explanatory power in the regression results. This aligns well with well-established economic theories, which emphasize that factors like academic discipline, regional labor market characteristics, and the timing of graduates' entry into the workforce have more direct and significant effects on salary levels.
 
@@ -716,7 +712,7 @@ insertion_master_panel |>
 
 -   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education. It is interesting considering that new teachers typically do not choose where they work.
 
--   The two specializations where the most students move out of their region of graduation are science/technology/health and literature/languages/arts.
+-   The two specializations where the most students move out of their region of graduation are Sciences, Technologies, and Heal and Arts, Languages, and Literature.
 
 -   For the regions of Guadeloupe and French Guyana, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
 
@@ -796,7 +792,7 @@ We notice that the proportion of students with a scholarship tends to be the sam
 
 ## Conclusion
 
-  We have been able to make significant observations with the various tests performed on both data sets. However, they are insufficient to draw actual conclusions on the situation of graduate students in France. 
+We have been able to make significant observations with the various tests performed on both data sets. However, they are insufficient to draw actual conclusions on the situation of graduate students in France. 
   
 The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service (especially the education degrees), which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).\
 
