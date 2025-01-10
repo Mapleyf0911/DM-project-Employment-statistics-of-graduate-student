@@ -282,9 +282,11 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-We try to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance across different fields ('Domaines').
+We try to find the fields/specializations with the highest employment rate and salary. We first conduct a preliminary analysis with the highest level of employment performance across different fields ('Domaines').
 
-In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest employment performance, with both rates below 100%, while all other disciplines achieved a 100% employment rate. Regarding salary levels, graduates in Law, Economics and Management, as well as Science, Technology, and Health, earn the highest pay, reaching €49,100. Graduates from Arts, Languages, and Literature earn the lowest salary at only €34,300.
+In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest maximum rates, with both maximum rates below 100%, while all other disciplines achieved a maximum employment rate of 100%. 
+
+Regarding salary levels, the specialization Law, Economics and Management, as well as Science, Technology, and Health, has the highest maximum wage, reaching €49,100. Arts, Languages, and Literature has the lowest maximum salary at only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -313,7 +315,7 @@ kable(merged_domain_stats,
                     "Max insertion rate (%)", "Max stable employment rate (%)") )
 ```
 
-Further, we looked at the average performance of employment in each field/specialization and reached a similar conclusion. Graduates from Sciences, Technologies, and Health and Law, Economics, and Management fields stand out in terms of average salaries, earning €31,468 and €31,350 respectively, ranking first and second. In contrast, graduates from Arts, Languages, and Literature have the lowest average salary.
+We also look at the average performance of employment in each field/specialization and reached a similar conclusion. Graduates from Sciences, Technologies, and Health and Law, Economics, and Management fields stand out in terms of average salaries, earning €31,468 and €31,350 respectively, ranking first and second. In contrast, graduates from Arts, Languages, and Literature have the lowest average salary.
 
 Regarding the insertion rate, three fields exceed 90%: Sciences, Technologies, and Health, Law, Economics, and Management, and Education. Among them, Education excels not only in employment rate but also in the stable employment rate, outperforming all other fields in the latter.
 
@@ -373,7 +375,7 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
   scale_x_discrete(limits = c("Sciences, technologies et santé", "Droit, économie et gestion", "Masters enseignement", "Sciences humaines et sociales", "Lettres, langues, arts")) 
 ```
 
-When we further analyzed the average performance of employment at the specialization level, we found that the top 3 specializations all belong to the Sciences, Technologies, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. These fields are generally regarded as lower-paying. 
+Analyzing the average performance of employment at the specialization level, we find that the top 3 specializations all belong to the Science, Technology, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. These fields are generally regarded as lower-paying. 
 
 However, an interesting finding is that although the employment performance of Education graduates ranks in the middle among the five fields in our study, a specific specialization within Education, Primary Education, appears to have relatively low pay, with an average net annual wage of only €25,771.
 
@@ -510,7 +512,7 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
   )
 ```
 
-From the graphs above, we can see a clear increase in salaries between the two timeframes (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
+From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
 
 However, the university factor does not appear to have a significant impact on determining graduate salary levels——a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we can find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields consistently have lower average salaries, which aligns with our earlier findings.
 
@@ -615,8 +617,6 @@ reg_result_summary <- reg_result_table |>
   
 kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", align = 'c')
 ```
-
-
 
 
 While we can see a more precise role of university in determining graduate pay levels if we regress by "Académie" subgroups, we think that our current analyses are already illustrative to some extent. 
