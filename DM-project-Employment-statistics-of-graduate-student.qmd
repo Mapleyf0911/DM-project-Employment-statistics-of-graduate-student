@@ -80,8 +80,7 @@ summary_stats <- data.frame(
   "Value" = c(nrow_insertion_master, ncol_insertion_master)
 )
 
-kable(summary_stats, caption = "Summary Statistics of the Dataset") |>
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+kable(summary_stats, caption = "Summary Statistics of the Dataset") 
 ```
 
 In this data set, each observation includes:
