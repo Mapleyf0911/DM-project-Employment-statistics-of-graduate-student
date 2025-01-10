@@ -68,8 +68,8 @@ Here, we are using employment statistics from the professional insertion survey 
 ```{r}
 insertion_master <- vroom(here("data", "fr-esr-insertion_professionnelle-master-national.csv"))
 ```
-
-Our main data set is about the professional insertion outcomes of Master's graduates from universities and equivalent-level institutions. The data set contains `r nrow(insertion_master)` observations and `r ncol(insertion_master)` variables in total.
+\
+Our main data set is about the professional outcomes of graduate students from various French universities, 18 months and 30 months after graduation, between 2010 and 2021. The data was collected between December 2012 and and December 2022. 
 
 ```{r}
 nrow_insertion_master <- nrow(insertion_master)
@@ -80,10 +80,10 @@ summary_stats <- data.frame(
   "Value" = c(nrow_insertion_master, ncol_insertion_master)
 )
 
-kable(summary_stats, caption = "Summary Statistics of the Dataset") 
+kable(summary_stats, caption = "Dataset description", col.names = c("",""), align = "c") 
 ```
 
-In this data set, each observation includes:
+Each observation^[With the exception of aggregate observations, that will be isolated later on.] is about the students of only one graduate program, either 18 months or 30 months after graduation. It includes: 
 
 -   The year of the survey, the type of master's degree, the university number and the "académie" number and name;
 
@@ -93,7 +93,9 @@ In this data set, each observation includes:
 
 -   The percentage of women and scholarship students; <br>
 
--   The "insertion" rate (% of the graduates that are employed);<br>
+-   The employment rate (share of graduate students that are employed or seeking employment among the whole graduate population, actives and inactives); <br>
+
+-   The "insertion" rate (employment rate that does not take into account inactives in the reference population);<br>
 
 -   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
 
@@ -790,7 +792,7 @@ aggregate_scholarship |>
 
   We have been able to make significant observations with the various tests performed on both data sets. However, they are insufficient to draw actual conclusions on the situation of graduate students in France. 
   
-The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service (especially the education degrees), which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).
+The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service (especially the education degrees), which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).\
 
 The fact that all data was collected among individuals at the very beginning of their professional life is another potential critic. People that have just graduated will be in entry-level positions and are unlikely to be liberal professionals. If the same survey were to be performed five to ten years after graduation, the gap in wages between certain specializations would be wider, as some people would have opened their own law firm or medical practice, or could have created their own business, which widens even more the range of potential wages. 
 
