@@ -523,11 +523,11 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
 \
 From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.\
 
-However, the university factor does not appear to have a significant impact on determining graduate salary levels——a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we can find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields consistently have lower average salaries, which aligns with our earlier findings.
+However, the university factor does not appear to have a significant impact on determining graduate salary levels — a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields always have lower average salaries, which aligns with our earlier findings.
 
 #### Regression model
 
-To analyze the effect of universities on graduate salaries while controlling the effect of other variables, we can construct the following regression model:
+To analyze the effect of the university factor on graduate salaries while controlling the effect of other variables, we construct the following regression model:
 
 $$
 Y_i = \beta_0 + \sum_{j=1}^{J-1} \beta_j D_{University_j} + \sum_{k=1}^{K-1} \gamma_k D_{Field_k} + \sum_{l=1}^{L-1} \delta_l D_{Situation_l} + \phi \cdot RegionalSalary + \epsilon_i
@@ -570,7 +570,7 @@ insertion_master_reg$Académie <-
 insertion_master_reg[is.na(insertion_master_reg[, 3]), 3] <- "Toutes université"
 ```
 
-We need to set a reference group for each categorical variable when creating dummy variables. For the variable $D_{University_j}$, we select "Toutes universités et établissements assimilés" as the reference group. Although there may be some overlap between the variables for a specific university and those for all the universities, this reference group is still the ideal choice, as it provides more economic insights and allows us to compare the performance of individual universities against the average performance of all universities in our data set. 
+We need to set a reference group for each categorical variable when creating dummy variables. For the variable $D_{University_j}$, we select "Toutes universités et établissements assimilés" as the reference group. Although there may be some overlap between the variables for a specific university and those for all the universities, this reference group is still the ideal choice, as it provides more economic insight and allows us to compare the performance of individual universities against the average performance of all universities in our data set. 
 For the variable $D_{Field_k}$, we choose Education as the reference group because graduates from this field typically exhibit employment outcomes that are average compared to the other five fields. This choice will enable us to assess the employment performance differences between graduates from Education field and those from the other four fields. And for the variable $D_{Situation_l}$, which has only two possible values, either value can serve as the reference group.
 
 #### Interpretation of Regression Results
@@ -630,7 +630,7 @@ kable(reg_result_summary, caption = "Regression Coefficients Table (Part.)", ali
 
 While we can see a more precise role of university in determining graduate pay levels if we regress by "Académie" subgroups, we think that our current analyses are already illustrative to some extent. 
 
-Contrary to many academic belief that schools have a significant impact on graduate pay, our results show that the role of schools is not particularly prominent. This may be related to the unique French higher education system, particularly the public university system. In this system, with the exception of some elite institutions (e.g., Dauphine), most institutions are relatively similar in terms of educational standards and therefore do not have a decisive impact on the employment performance of their graduates.
+Our results show that the role of schools is not particularly prominent. It seems that most public institutions are relatively similar in terms of educational standards and therefore do not have a decisive impact on the employment performance of their graduates.
 
 Instead, other factors (e.g. choice of specialization and region of employment) seem to have a greater impact on graduate salaries.
 
@@ -716,7 +716,7 @@ insertion_master_panel |>
 
 -   For the majority of "académies", the specialization with the lowest rate of graduates working outside of their region of graduation is education. It is interesting considering that new teachers typically do not choose where they work.
 
--   The two specializations where most students move out of their region of graduation are science/technology/health and literature/languages/arts.
+-   The two specializations where the most students move out of their region of graduation are science/technology/health and literature/languages/arts.
 
 -   For the regions of Guadeloupe and French Guyana, the lack of observations in our survey makes the results for these zones meaningless as only one specialization is represented.
 
