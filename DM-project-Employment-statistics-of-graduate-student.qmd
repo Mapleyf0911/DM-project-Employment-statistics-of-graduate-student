@@ -196,9 +196,9 @@ The "Remarque" column contains five possible values:
 4.  Université n'ayant pas participé à l'enquête. \[non-participating\]
 5.  N/A. \[no comment\]
 
-Among all observations, only those where the "Remarque" is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain the necessary data for further analysis (e.g., graduate employment rates and salary levels). Therefore, we will retain only those observations that meet these two conditions.
+Among all observations, only those where the "Remarque" is either "Université dont les résultats sont plus fragiles (taux de réponse inférieur à 50%)" or "N/A" contain exploitable data for further analysis (e.g., graduate employment rates and salary levels). Therefore, only the observations that meet these two conditions will be kept. 
 
-Some of the observations are on aggreagate data from all degrees of the same discipline, by year. As they are on national data, they are not associated with any specific "académie". We will keep them for analysis purposes but after removing them from the main data set.
+Some of the observations are on aggregate data from all degrees of the same discipline, by year. As they are on national data, they are not associated with any specific "académie". They will be kept for analysis purposes but after being removed from the main data set.\
 
 ```{r}
 ## removing 
@@ -213,7 +213,7 @@ aggregate_data <- insertion_master_panel |>
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 ```
 
-In the data set "insertion_master_panel", many values are missing, due to absence of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+In the data set "insertion_master_panel", many values are missing, due to a lack of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 13:29]
@@ -237,10 +237,9 @@ insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x 
 insertion_master_panel[] <- lapply(insertion_master_panel, function(x) ifelse(x == ".", NA, x))
 ```
 
-And to facilitate our future analysis, we also convert some character-formatted data values into numeric format.
 
 ```{r}
-#| warning: false
+#'[Co]
 cols_to_convert <- c(16:21, 23:29)
 insertion_master_panel[, cols_to_convert] <- sapply(insertion_master_panel[, cols_to_convert], function(x){
   if (is.character(x)){
@@ -283,9 +282,9 @@ best_specializations_max <- insertion_master_panel |>
   arrange(Domaine, desc(MaxSalaire), desc(MaxInsertionRate), desc(MaxStableEmployment))
 ```
 
-For this question, we tried to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance across different fields ('Domaines').
+We try to find the "best fields/specializations" from two perspectives. We first conducted a preliminary analysis with the optimal level of employment performance across different fields ('Domaines').
 
-In terms of the insertion rate and stable employment rate, graduates from Arts, Languages, and Literature fields have the lowest employment performance, with both rates below 100%, while all other disciplines achieved a 100% employment rate. Regarding salary levels, graduates in Law, Economics and Management, as well as Science, Technology, and Health, earn the highest pay, reaching €49,100. Graduates from Arts, Languages, and Literature earn the lowest salary at only €34,300.
+In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest employment performance, with both rates below 100%, while all other disciplines achieved a 100% employment rate. Regarding salary levels, graduates in Law, Economics and Management, as well as Science, Technology, and Health, earn the highest pay, reaching €49,100. Graduates from Arts, Languages, and Literature earn the lowest salary at only €34,300.
 
 ```{r}
 max_salary_domain <- best_specializations_max |>
@@ -722,7 +721,7 @@ average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
 stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
 ```
 
-In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)` percentage points. We can notice that some specializations have a much higher proportion of women. Keeping only those with a proportion of women higher than the average, we obtain:
+In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)` percentage points. We can notice that some specializations have a much higher proportion of women.
 
 ```{r}
 #'[Creating a data frame with the mean % of women per discipline over the 11 years.] 
@@ -739,10 +738,13 @@ aggregate_femme |> ggplot(aes(x=`Taux de femmes`, y= Discipline)) +
            label = "average % of women", 
            angle = 90,
            size = 3
-           )
+           ) +
+  labs(y = "Specialization", x = "% of women ")
   
 ```
 
+
+Keeping only those with a proportion of women higher than the average, we obtain:
 ```{r}
 #'[Keeping the discipline with a higher than average % of women]
 aggregate_femme |>
@@ -772,20 +774,25 @@ There is an average `r paste(average_scholarship)` % of scholarship students in 
 aggregate_scholarship <- aggregate_data |>
   filter(!is.na(`% de diplômés boursiers`)) |>
   group_by(Discipline) |>
-  summarise(`Taux de boursiers` = mean(`% de diplômés boursiers`))
+  summarise(`Taux de boursiers` = round(mean(`% de diplômés boursiers`), 3))
 
 #'[Formatting]
-aggregate_scholarship |> knitr::kable(caption = "Percentage of graduates with a scholarship per specialization") |>
+aggregate_scholarship |> 
+  knitr::kable(caption = "Percentage of graduates with a scholarship per specialization",
+               col.names = c("Specialization","% of students with a scholarship"),
+               align = "c") |>
   row_spec(c(13, 14, 15), background = "yellow")
 ```
 
 ## Conclusion
 
-  We have been able to make significant observations with the various tests performed on both data sets. They are nonetheless insufficient to draw actual conclusions on the situation of graduate students in France. 
-The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service, which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).
-The fact that all data was collected among individuals at the very beginning of their professional life is another potential critic. People that have just graduated will be in entry-level positions and are unlikely to be liberal professionals. If the same survey were to be performed five to ten years after graduation, the gap in wages between certain specializations would be wider, as some people would have opened their own law firm or medical practice. 
+  We have been able to make significant observations with the various tests performed on both data sets. However, they are insufficient to draw actual conclusions on the situation of graduate students in France. 
+  
+The main issue with the main data set is its lack of precision. To ease aggregation, the different graduate degrees were classified in different categories and subcategories (fields and specializations). However, specializations are not necessarily the best indicators for wage and employment outcomes. It does not indicate the type of employment of the graduates. Certain degrees are more likely to lead to civil service (especially the education degrees), which offers lower wages than the private sector for similar positions, while having more benefits (such as job security).
 
-\newpage
+The fact that all data was collected among individuals at the very beginning of their professional life is another potential critic. People that have just graduated will be in entry-level positions and are unlikely to be liberal professionals. If the same survey were to be performed five to ten years after graduation, the gap in wages between certain specializations would be wider, as some people would have opened their own law firm or medical practice, or could have created their own business, which widens even more the range of potential wages. 
+
+\newpage 
 
 ## Appendix
 
