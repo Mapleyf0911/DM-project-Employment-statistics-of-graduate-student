@@ -80,14 +80,16 @@ summary_stats <- data.frame(
   "Value" = c(nrow_insertion_master, ncol_insertion_master)
 )
 
-kable(summary_stats, caption = "Dataset description", col.names = c("",""), align = "c") 
+kable(summary_stats, caption = "Dataset description", 
+      col.names = c("",""), 
+      align = "c") 
 ```
 
 Each observation^[With the exception of aggregate observations, that will be isolated later on.] is about the students of only one graduate program, either 18 months or 30 months after graduation. It includes: 
 
--   The year of the survey, the type of master's degree, the university number and the "académie" number and name;
+-   The year of the survey, the type of master's degree (LMD or ENS), the university number and the "académie" code and name;
 
--   The name of the university responsible of the degree, the field ("domaine") and subject ("discipline") of the graduate program;<br>
+-   The name of the university responsible of the degree, the field ("domaine") and specialization ("discipline") of the graduate program;<br>
 
 -   The number of responses and response rate;<br>
 
@@ -113,7 +115,7 @@ For comparison purposes, we also use data on wages in a report titled "Île-de-F
 
 The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.
 
-From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and removed some textual explanatory information before importing the needed table into R.\
+From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and remove the textual explanatory information before importing the needed table into R.\
 We have:
 
 -   the different deciles of net wages at the Île-de-France and national levels;
@@ -122,7 +124,7 @@ We have:
 Net_wage_EQTP <- vroom(here("data", "Figure_1_Distribution_of_Monthly_Net_Wages_in_Ile-de-France_and_France_EQTP.csv"))
 ```
 
--   the percentage of different types of earners in the Île-de-France regions;
+-   the percentage of each type of earners in the Île-de-France regions;
 
 ```{r}
 pct_high_income <- vroom(here("data", "Figure_2_Ile-de-France_Share_in_High_Incomes_High_Wealth_and_High_Wages.csv"))
@@ -138,7 +140,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 ### Data set joining
 
-By merging the wage data from the complementary data set with our main data set, we obtain the panel data "insertion_master_panel" for further analysis.
+By merging the wage data from the complementary data set with the main data set, we obtain the panel data "insertion_master_panel" for further analysis.
 
 ```{r}
 #'[That chunk should only be executed once.]
@@ -179,9 +181,7 @@ In our main data set, there are 35 variables. Some of them might be superfluous 
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
 
-However, some graduate programs have two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master's program, we have to create an additional variable (or primary key).
-
--   The identifier is called "obs_ID" and is made of the concatenation of "Année", "Numéro de l'établissement" and "cle_disc".
+-   Each graduate program has two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master's program, we have to create an additional variable to have a primary key. The identifier is called "obs_ID" and is made of the concatenation of "Année", "Numéro de l'établissement" and "cle_disc".
 
 ```{r}
 ## création clé 
@@ -214,7 +214,7 @@ aggregate_data <- insertion_master_panel |>
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 ```
 
-In the data set "insertion_master_panel", many values are missing, due to a lack of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+Many values are missing, due to a lack of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 13:29]
@@ -228,7 +228,8 @@ non_numeric_counts <- sapply(selected_columns, function(column){
   })
   
 kable(data.frame(non_numeric_counts), 
-      caption = "Summary of Missing and Non-Numeric Data", align = 'c', col.names = c("", "Counts"))
+      caption = "Missing and Non-Numeric Data", align = 'c', 
+      col.names = c("Column", "Counts"))
 ```
 
 ```{r}
