@@ -108,8 +108,8 @@ Each observation^[With the exception of aggregate observations, that will be iso
 **Source:** <https://data.enseignementsup-recherche.gouv.fr/explore/embed/dataset/fr-esr-insertion_professionnelle-master/table/?disjunctive.academie&disjunctive.numero_de_l_etablissement&sort=-annee>
 
 #### Complementary data set
-
-For comparison purposes, we found data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores). The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
+\
+For comparison purposes, we also use data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores). The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
 
 The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.
 
@@ -725,7 +725,7 @@ average_femme <- round(mean(insertion_master_panel$`% femmes`, na.rm = TRUE), 2)
 stdev_femme <- round(sd(insertion_master_panel$`% femmes`, na.rm = TRUE),2)
 ```
 
-In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)` percentage points. We can notice that some specializations have a much higher proportion of women.
+In our survey, there is an average `r paste(average_femme)` % of women, with a standard deviation of `r paste(stdev_femme)` percentage points. We can notice that some specializations have a much higher proportion of women. Representing the different specializations with their share of women: 
 
 ```{r}
 #'[Creating a data frame with the mean % of women per discipline over the 11 years.] 
@@ -763,15 +763,13 @@ aggregate_femme |>
 
 The z-score is the number of standard deviations between the observed value and the mean. We can notice that the first-degree education and psychology specializations have a strong majority of women (a z-score of around 1.5). The next specializations with the highest proportion of women, general teaching and literature, language and art, have a z-score of \~1, or a 0.5σ difference from the first two specializations.\
 
-Now, let's focus on the percentage of scholarship students in our survey.
-
 ```{r}
 ## Determining the rounded mean and standard deviation % of scholarship students in our survey
-average_scholarship <- round(mean(insertion_master_panel$`% de diplômés boursiers`, na.rm = TRUE), 2)
-stdev_scholarship <- round(sd(insertion_master_panel$`% de diplômés boursiers`, na.rm = TRUE),2)
+average_scholarship <- round(mean(aggregate_data$`% de diplômés boursiers`, na.rm = TRUE), 2)
+stdev_scholarship <- round(sd(aggregate_data$`% de diplômés boursiers`, na.rm = TRUE),2)
 ```
-
-There is an average `r paste(average_scholarship)` % of scholarship students in our survey, with a standard deviation of `r paste(stdev_scholarship)`. By computing the percentage of scholarship students per field, we obtain:
+Now, let's focus on the percentage of scholarship students in our survey.
+There is an average `r paste(average_scholarship)` % of scholarship students in our survey, with a standard deviation of `r paste(stdev_scholarship)` percentage points. By computing the percentage of scholarship students per field, we obtain:
 
 ```{r}
 #'[Creating a data frame]
@@ -787,6 +785,9 @@ aggregate_scholarship |>
                align = "c") |>
   row_spec(c(13, 14, 15), background = "yellow")
 ```
+
+We notice that the proportion of students with a scholarship tends to be the same among all specializations, with the exception of education degrees. This could be explained by the fact that conditions to obtain a scholarship are identical among public universities.  
+
 
 ## Conclusion
 
