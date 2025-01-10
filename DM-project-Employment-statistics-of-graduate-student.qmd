@@ -39,9 +39,9 @@ For more information, visit our Github repository at <https://github.com/Mapleyf
 
 ## Goal of our research
 
-We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages allow us to compute and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at various levels. Expressing these hypotheses, we obtain the following questions:
+We will define the goals of our quantitative analysis. Data on the insertion rate and different measures of wages could allow us to compute certain indicators and make comparisons between sectors, and to emit hypotheses on correlations between some of our variables at various levels. Expressing these hypotheses, we obtain the following questions:
 
--   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the mean wage/rate for each field and make comparisons.
+-   Which fields/specializations lead to the highest wages, have the highest insertion rate, or have the highest level of stable employment? This will be the focus of our analysis. We can compute the averages for each field for comparison purposes.
 
 -   Is the university that one goes to a significant factor to explain wages? We could take one field/specialization taught at different universities, focus on these observations to make a (simple) regression, and try to determine the significance of the "university" factor.
 
@@ -51,9 +51,9 @@ We will define the goals of our quantitative analysis. Data on the insertion rat
 
 -   Do some fields of study require graduates to leave the region of the "académie" where they completed their master's degree? It could show the concentration of certain industries at national level.
 
--   Do some specializations attract more women/scholarship students? There are already studies on the type of profile each field is more likely to attract, thus we can try to find the same results with our data set.
+-   Do some specializations attract more women/scholarship students?
 
-We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusions, nonetheless this may help define guidelines for a bigger project.
+We do not have a unique research question, as it would not allow us to do enough testing at our level, given our data set. However, all of the above-mentioned questions go in the same direction: what can be inferred from our data sets about the situation of graduate students? This will certainly be insufficient to make any real conclusion, nonetheless this may help define guidelines for a bigger project.
 
 ## The data sets
 
@@ -99,6 +99,8 @@ Each observation^[With the exception of aggregate observations, that will be iso
 
 -   The "insertion" rate (employment rate that does not take into account inactives in the reference population);<br>
 
+-     The stable employment rate;<br> 
+
 -   The percentage of students that work full-time, in executive positions, and outside the region of their university;<br>
 
 -   The median monthly net salary and the estimated gross annual salary of graduates that work full time;<br>
@@ -111,11 +113,12 @@ Each observation^[With the exception of aggregate observations, that will be iso
 
 #### Complementary data set
 \
-For comparison purposes, we also use data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores). The database Tous Salariés has all the information about employees. They use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.\
+For comparison purposes, we also use data on wages in a report titled "Île-de-France accounts for half of the highest-paid private sector employees in France" of Insee. The data used for this report was collected by the Insee from two databases (Tous Salariés and Flores).
 
-The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.
+The database Tous Salariés has all the information about employees as they use the administrative declaration submitted by employers. In the private sector, the annual salary salaries and the number of employees data are mainly derived from Nominative Social Declarations ("Déclarations sociales nominatives (DSN)" in French) and Annual Social Data Declaration ("Déclarations annuelles des données sociales (DADS)" in French). Employees in the agricultural sector, employees of private households, apprentices, and interns are excluded from this study.The database (Flores 2018) covers all employers (civil service, private employers, including individual employers), with the exception of the employment activities of the *Ministère des Forces Armées* (France). This database can be used to describe salaried employment across all sectors.\
 
 From the data set, we have 2018 data on median/average salaries in the Île-de-France region and at national level, taking into account multiple variables such as sector, type of position and gender. The data is presented in several tables. We simply split the file by each table and remove the textual explanatory information before importing the needed table into R.\
+
 We have:
 
 -   the different deciles of net wages at the Île-de-France and national levels;
@@ -140,7 +143,7 @@ wages_profession_gender <- vroom(here("data", "Figure_4_Average_Monthly_Net_Wage
 
 ### Data set joining
 
-By merging the wage data from the complementary data set with the main data set, we obtain the panel data "insertion_master_panel" for further analysis.
+By merging the wage data from the complementary data set with the main data set, we obtain the panel data "insertion_master_panel" for subsequent analysis.
 
 ```{r}
 #'[That chunk should only be executed once.]
@@ -167,7 +170,7 @@ insertion_master_panel <- cbind(insertion_master, Net_wage_EQTP_wide_regional_na
 
 ### Data cleaning
 
-In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis. We can remove the corresponding columns from the original data set.
+In our main data set, there are 35 variables. Some of them might be superfluous or at least not relevant for our analysis. 
 
 -   "Etablissement actuel" (the 5th column) just gives the exact full name of the university, but in reality we know the corresponding university from the abbreviation.
 
@@ -175,13 +178,13 @@ In our main data set, there are 35 variables. Some of them might be superfluous 
 
 -   "Id_Paysage" (the 35th column) has the same purpose as "Code de l'établissement".
 
--   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including "inactives" (neither working nor in search of employment.) while the insertion rate does not include them.
+-   "Taux d'emploi" (the 18th column) and "Taux d'emploi en France" (the 19th column) are missing a significant amount of values (17669 out of 19603 observations). We consider that "Taux d'insertion" is sufficient, as the difference between the employment rate and insertion rate may not be significant. According to the original source, the employment rate is computed including "inactives" (neither working nor in search of employment.) while the insertion rate does not include them.<br>
 
 ```{r}
 insertion_master_panel <- insertion_master_panel |> select(-c(5, 18, 19, 33, 35))
 ```
-
--   Each graduate program has two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master's program, we have to create an additional variable to have a primary key. The identifier is called "obs_ID" and is made of the concatenation of "Année", "Numéro de l'établissement" and "cle_disc".
+We can remove the corresponding columns from the original data set.
+There is also one variable we have to add. Each graduate program has two observations (one after 18 months, one after 30 months). To perfectly identify each observation of each master's program, we have to create an additional variable to have a primary key. The identifier is called "obs_ID" and is made of the concatenation of "Année", "Numéro de l'établissement" and "cle_disc".\
 
 ```{r}
 ## création clé 
@@ -189,6 +192,7 @@ insertion_master_panel <- insertion_master_panel |>
   mutate(obs_ID = paste(Annee,  `Numéro de l'établissement`, `cle_DISC`, sep = "_"))
 ```
 
+Let's focus now on the observations, as not some of them may not be exploitable. 
 The "Remarque" column contains five possible values:
 
 1.  Université ayant participé à l'enquête mais dont l'effectif est trop petit pour que les résultats soient jugés exploitables. \[Inadequate Size of Graduates Population\]
@@ -214,7 +218,7 @@ aggregate_data <- insertion_master_panel |>
 insertion_master_panel <- insertion_master_panel |> filter(!is.na(Académie))
 ```
 
-Many values are missing, due to a lack of data ("nd" = non disponible) or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
+Many values are missing, due to a lack of data ("nd" = "non disponible") or unusable data ("ns" = "non significatif" and "fe" = "faible effectif"). Here, we examine how many missing values we have in each column, and address these missing values carefully before our analysis.
 
 ```{r}
 selected_columns <- insertion_master_panel[, 13:29]
@@ -286,7 +290,7 @@ best_specializations_max <- insertion_master_panel |>
 
 We try to find the fields/specializations with the highest employment rate and salary. We first conduct a preliminary analysis with the highest level of employment performance across different fields ('Domaines').
 
-In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest maximum rates, with both maximum rates below 100%, while all other disciplines achieved a maximum employment rate of 100%. 
+In terms of insertion and stable employment, graduates from Arts, Languages, and Literature fields have the lowest maximum rates, with both maximum rates below 100% (but still over 90%), while all other fields achieved a maximum employment rate of 100%. 
 
 Regarding salary levels, the specialization Law, Economics and Management, as well as Science, Technology, and Health, has the highest maximum wage, reaching €49,100. Arts, Languages, and Literature has the lowest maximum salary at only €34,300.
 
@@ -380,9 +384,9 @@ ggplot(best_domain_long, aes(x = Domaine, y = Value, fill = Domaine)) +
 
 
 
-Analyzing the average performance of employment at the specialization level, we find that the top 3 specializations all belong to the Science, Technology, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. These fields are generally regarded as lower-paying. 
+Analyzing the average performance of employment at the specialization level, we find that the top 3 specializations all belong to the Science, Technology, and Health field: Computer Science, Engineering and Fundamental Sciences. In contrast, the bottom 3 specializations are from three different fields: Humanities and Social Science, Arts, Languages, and Literature, and Education. 
 
-However, an interesting finding is that although the employment performance of Education graduates ranks in the middle among the five fields in our study, a specific specialization within Education, Primary Education, appears to have relatively low pay, with an average net annual wage of only €25,771.
+Although the employment performance of Education graduates ranks in the middle among the five fields in our study, a specific specialization within Education, Primary Education, appears to have relatively low pay, with an average net annual wage of only €25,771.
 
 ```{r}
 best_specializations_mean <- insertion_master_panel |>
@@ -422,7 +426,7 @@ kable(merged_table,
 
 ### Question 2: Is the university that one goes to a significant factor to explain wages?
 
-To explore this question,  we first examine the summary of salary data for graduates from different universities within a specific field. Here, we use data from 30 months after graduation.
+To answer this question, we first examine the summary of salary data for graduates from different universities within a specific field. Here, we use data from 30 months after graduation.
 
 ```{r}
 reg_econ <- insertion_master_panel |> 
@@ -454,7 +458,7 @@ kable(merged_table, align = "c",
       caption = "Average Salaries of Law, Economics, and Management Graduates: 30 Months After Graduation",
       col.names = c("University", "Mean monthly net wage between 2010 and 2020"))
 ```
-From the table above, we can easily find that there are significant differences in salary levels among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 got just over half of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.\
+From the table above, we can see that there are significant differences in salary among Law, Economics, and Management graduates from different universities. For example, graduates from Paris-Panthéon-Assas earned an average monthly salary of €2,800, while those from Rennes 2 earned `r round((1640/2800)*100,2)` % of that amount, at €1,640. However, this is just a rough analysis; many other factors influence the salary levels of graduates in the same field, such as their choice of employment location after graduation and the number of months since graduation. It is widely acknowledged that for most sectors, the average salary in the region where graduates work has a substantial impact on their income. Therefore, we aim to control the effect of other factors when we do the further analysis in the next part.\
 
 ```{r}
 #| fig-width: 11
@@ -516,8 +520,8 @@ ggplot(insertion_master_hors_IDF, aes(x = Établissement, y = `Salaire brut annu
     y = "Estimated Average Annual Salary (€)"
   )
 ```
-
-From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.
+\
+From the graphs above, we can see a clear increase in salaries between the two time frames (18 months and 30 months after graduation). Comparing the two panels in each figure, the distribution of points in the right-hand side plots (30 months) shows an overall upward shift, which indicates a larger number of graduates achieving better salaries and a reduction in the number of graduates in lower salary ranges.\
 
 However, the university factor does not appear to have a significant impact on determining graduate salary levels——a conclusion that will also be supported by our regression model. In contrast, from both sets of graphs, we can find that graduates from the Sciences, Technologies, and Health and Law, Economics, and Management fields consistently achieve higher average salaries. Meanwhile, graduates from Humanities and Social Science and Arts, Languages, and Literature fields consistently have lower average salaries, which aligns with our earlier findings.
 
@@ -637,7 +641,7 @@ Instead, other factors (e.g. choice of specialization and region of employment) 
 nat_net_avg <- round(mean(insertion_master_panel$`Salaire net médian des emplois à temps plein`, na.rm = TRUE), 3)
 ```
 
-The national net monthly average wage is `r wages_profession_gender[10,5]*1000` €, while the net monthly average wage of the surveyed students is `r paste(nat_net_avg)` €. We have to keep in mind that the people surveyed are at the very beginning of the professional careers and probably employed in entry-level jobs. A lower average wage is thus to be expected. This skews any analysis we could make with the complementary data set as it is not conditional on years of professional experience. Also, the specializations of the various graduate degrees are still too vague to be able to classify them in the different categories of any figure of the complementary data set.
+The national net monthly average wage is € `r wages_profession_gender[10,5]*1000`, while the net monthly average wage of the surveyed students is € `r paste(nat_net_avg)` . We have to keep in mind that the people surveyed are at the very beginning of the professional careers and probably employed in entry-level jobs. A lower average wage is thus to be expected. This skews any analysis we could make with the complementary data set as it is not conditional on years of professional experience. Also, the specializations of the various graduate degrees are still too vague to be able to classify them in the different categories of any figure of the complementary data set.
 
 ### Question 4: Are there significant differences between observations made 18 months after graduating and observations made 30 months after graduating?
 
